@@ -1,0 +1,1512 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#2563eb">
+<title>할부 계산기 2026 · 자동차 할부 월 납입금·카드 할부 수수료 — 신차·중고차·유예할부·부분 무이자 (무료)</title>
+<meta name="description" content="자동차 할부 계산기와 카드 할부 계산기를 한 곳에. 차값·선수금·기간·금리를 넣으면 월 납입금과 총 이자, 상환표가 바로 나옵니다. 신차·중고차, 유예할부, 견적서 월 납입금으로 실제 금리 확인, 중도상환 이득까지. 카드 할부는 무이자·부분 무이자와 결제일 기준 일수로 회차별 수수료를 셉니다. 설치·가입 없이 무료.">
+<meta property="og:title" content="할부 계산기 · 자동차 할부 월 납입금 · 카드 할부 수수료">
+<meta property="og:description" content="차값·선수금·기간·금리만 넣으면 월 납입금과 총 이자, 상환표까지. 카드 할부는 무이자·부분 무이자 수수료를 회차별로.">
+<meta property="og:type" content="website">
+<!-- 링크 미리보기 그림: 스크래퍼는 절대 주소만 읽으므로 배포 주소로 적는다. 그림은 make_thumbnail.py 가 만든 og-image.png(1200×630) -->
+<meta property="og:image" content="https://hwj-hub.github.io/installment_calculator/og-image.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="할부 계산기 — 자동차 할부 월 납입금과 총 이자, 카드 할부 회차별 수수료가 나오는 화면">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='22' fill='%232563eb'/%3E%3Ctext x='50' y='72' font-size='64' font-weight='800' text-anchor='middle' fill='white' font-family='Arial'%3E%E2%82%A9%3C/text%3E%3C/svg%3E">
+<style>
+*,*::before,*::after{box-sizing:border-box}
+:root{
+  color-scheme:light dark;
+  --bg:#f2f4f8; --card:#fff; --card2:#f7f8fb; --fg:#151a26; --muted:#556072; --line:#e0e4ec;
+  --accent:#2563eb; --accent2:#0891b2; --afg:#fff;
+  --ok:#0f766e; --okbg:#e6f3f1; --warn:#b45309; --warnbg:#fef4e6; --danger:#c81e1e; --dangerbg:#fdecec;
+  --info:#475569; --infobg:#eef1f6;
+  --shadow:0 1px 2px rgba(16,24,40,.05),0 8px 24px -14px rgba(16,24,40,.32);
+  --r:16px;
+}
+@media (prefers-color-scheme:dark){
+ :root{
+  --bg:#0c0f16; --card:#161b26; --card2:#121620; --fg:#eef1f8; --muted:#a8b1c4; --line:#2a3244;
+  --accent:#93c5fd; --accent2:#67e8f9; --afg:#0b1a33;
+  --ok:#34d399; --okbg:#0f2a22; --warn:#fbbf24; --warnbg:#2a2110; --danger:#f87171; --dangerbg:#2c1414;
+  --info:#c3ccd8; --infobg:#1f242e;
+  --shadow:0 1px 2px rgba(0,0,0,.4),0 10px 30px -16px rgba(0,0,0,.8);
+ }
+}
+html,body{margin:0;padding:0}
+body{background:var(--bg);color:var(--fg);line-height:1.55;word-break:keep-all;overflow-wrap:anywhere;
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Malgun Gothic","Apple SD Gothic Neo",Roboto,sans-serif;
+  -webkit-text-size-adjust:100%;-webkit-tap-highlight-color:transparent}
+.wrap{max-width:1180px;margin:0 auto;padding:0 14px calc(70px + env(safe-area-inset-bottom))}
+.hide{display:none !important}
+.nw{white-space:nowrap}
+
+/* ── 인앱 브라우저 안내 띠 ── 앱 안 WebView 는 파일을 내려받지 못한다 */
+.iabar{display:none;align-items:center;gap:10px;margin:10px 0 0;padding:11px 12px;border-radius:12px;
+  background:var(--warnbg);border:1px solid color-mix(in srgb,var(--warn) 34%,transparent);line-height:1.5}
+body.inapp .iabar{display:flex}
+.iabar .ia-t{flex:1 1 auto;min-width:0;font-size:12.5px;font-weight:700;color:var(--fg)}
+.iabar .ia-t small{display:block;font-size:11.5px;font-weight:600;color:var(--muted);margin-top:2px}
+.iabar .ia-go{flex:0 0 auto;font:inherit;font-size:12.5px;font-weight:800;color:#fff;border:0;border-radius:999px;
+  padding:9px 14px;min-height:38px;cursor:pointer;background:linear-gradient(135deg,var(--accent),var(--accent2))}
+@media (prefers-color-scheme:dark){.iabar .ia-go{color:var(--afg)}}
+/* 닫기는 휴대폰에서 누르기 쉽게 36px(터치 대상 최소) */
+.iabar .ia-x{flex:0 0 auto;width:36px;height:36px;border-radius:50%;border:1px solid var(--line);background:transparent;
+  color:var(--muted);font:inherit;font-size:12px;line-height:1;cursor:pointer}
+/* ── 앱 안에서 열었을 때 막는 창 ── 토스트(z-index 99)보다는 아래에 둔다 */
+.iamodal{position:fixed;inset:0;z-index:90;display:none;align-items:center;justify-content:center;padding:18px;
+  background:rgba(8,14,20,.72);-webkit-backdrop-filter:blur(2px);backdrop-filter:blur(2px)}
+body.ia-lock{overflow:hidden}
+body.ia-lock .iamodal{display:flex}
+body.ia-lock .wrap{pointer-events:none}
+.iasheet{background:var(--card);border:1px solid var(--line);border-radius:18px;box-shadow:var(--shadow);
+  width:100%;max-width:420px;max-height:92vh;overflow:auto;padding:22px 18px 16px;text-align:center}
+.iasheet .iaic{font-size:34px;line-height:1;margin-bottom:10px}
+.iasheet h2{font-size:17.5px;font-weight:800;letter-spacing:-.02em;margin:0 0 10px;line-height:1.45}
+.iap{font-size:13.5px;font-weight:600;color:var(--muted);line-height:1.7;margin:0 0 14px}
+.iap b{color:var(--fg);font-weight:800}
+.iasteps{text-align:left;margin:0 0 16px;padding:12px 14px 12px 32px;border-radius:12px;background:var(--card2);
+  font-size:13px;font-weight:600;color:var(--muted);line-height:1.7}
+.iasteps li+li{margin-top:5px}
+.iasteps b{color:var(--fg);font-weight:800}
+.iabtn{display:block;width:100%;font:inherit;font-size:15px;font-weight:800;color:#fff;border:0;border-radius:12px;
+  padding:14px;min-height:52px;cursor:pointer;background:linear-gradient(135deg,var(--accent),var(--accent2));
+  box-shadow:var(--shadow)}
+@media (prefers-color-scheme:dark){.iabtn{color:var(--afg)}}
+.iafine{margin:12px 0 0;font-size:12px;font-weight:600;color:var(--muted);line-height:1.6}
+.iafine button{font:inherit;font-size:12px;font-weight:700;color:var(--muted);background:none;border:0;padding:6px 8px;
+  text-decoration:underline;cursor:pointer;min-height:36px}
+.dwarn{margin:10px 0 0;padding:10px 12px;border-radius:10px;background:var(--warnbg);font-size:12.5px;font-weight:700;line-height:1.6}
+/* 문장 속 단추라 줄 높이는 그대로 두고(음수 여백) 누르는 면만 넓힌다 */
+.dwarn button{font:inherit;font-size:12.5px;font-weight:800;color:var(--accent);background:none;border:0;padding:9px 2px;margin:-9px 0;
+  text-decoration:underline;cursor:pointer}
+
+/* ── 저장 완료 카드 ── 화면을 덮지 않고 본문 흐름 안에 펼친다 */
+#doneCard{border-color:color-mix(in srgb,var(--ok) 40%,var(--line))}
+.dmsg{margin:0 0 10px;font-size:14px;font-weight:700;line-height:1.6}
+.dsteps{margin:0;padding:0 0 0 20px;font-size:13px;font-weight:600;line-height:1.75;color:var(--muted)}
+.dsteps b{color:var(--fg);font-weight:800}
+
+header{text-align:center;padding:14px 0 2px}
+.logo{display:inline-flex;align-items:center;gap:9px;font-size:22px;font-weight:800;letter-spacing:-.02em}
+.logo .ico{width:34px;height:34px;border-radius:10px;display:grid;place-items:center;font-size:17px;
+  background:linear-gradient(135deg,var(--accent),var(--accent2));box-shadow:var(--shadow)}
+.tag{font-size:14.5px;font-weight:600;color:var(--muted);margin:8px 0 0;text-wrap:balance}
+.tag b{color:var(--fg)}
+.badges{display:flex;flex-wrap:wrap;gap:6px;justify-content:center;margin-top:10px}
+.badge{font-size:11.5px;font-weight:700;padding:4px 10px;border-radius:999px;background:var(--okbg);color:var(--ok);border:1px solid transparent}
+.badge.gray{background:var(--card2);color:var(--muted);border-color:var(--line)}
+
+.toolbar{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin-top:12px}
+
+/* ── 두 칸 배치 · 넓은 화면에서 미리보기를 옆에 붙인다 ── */
+.layout{display:grid;grid-template-columns:minmax(0,1fr);gap:0 16px}
+@media (min-width:980px){
+  .layout{grid-template-columns:minmax(0,1fr) 430px;align-items:start}
+  /* 미리보기 높이를 화면에 맞춰 줄여 「PDF로 저장」이 화면 안에 남게 한다.
+     옆 칸은 화면 높이 안에서 따로 스크롤한다 — sticky 만 두면 옆 칸이 화면보다 길 때
+     맨 위에서 저장했을 때 펼쳐지는 완료 카드가 화면 아래로 빠진다 */
+  .side{position:sticky;top:8px;max-height:100vh;overflow:auto;padding-bottom:10px;scrollbar-width:thin}
+  .side .pv-pages{max-height:calc(100vh - 480px);min-height:320px;overflow:auto}
+}
+
+.card{background:var(--card);border:1px solid var(--line);border-radius:var(--r);box-shadow:var(--shadow);padding:16px;margin-top:14px}
+.card h2{font-size:12px;font-weight:800;color:var(--muted);margin:0 0 12px;letter-spacing:.07em;
+  display:flex;align-items:center;justify-content:space-between;gap:8px}
+.card h2 .n{display:inline-grid;place-items:center;width:20px;height:20px;border-radius:6px;margin-right:6px;
+  background:color-mix(in srgb,var(--accent) 14%,transparent);color:var(--accent);letter-spacing:0;font-size:11.5px}
+.card h2 .opt{font-size:10.5px;font-weight:700;color:var(--muted);border:1px solid var(--line);border-radius:999px;padding:1px 8px;letter-spacing:.02em}
+
+/* ── 폼 ── */
+.row{margin-top:14px}
+.lab{display:flex;align-items:baseline;justify-content:space-between;gap:8px;font-size:13.5px;font-weight:800;margin-bottom:7px}
+.lab .hint{font-weight:500;color:var(--muted);font-size:12px;text-align:right}
+.lab>span:first-child{flex:0 0 auto}
+input[type=text],input[type=tel],input[type=date],input[type=time],select,textarea{font:inherit;font-size:16px;color:var(--fg);background:var(--card2);
+  border:1px solid var(--line);border-radius:10px;padding:10px 12px;min-height:46px;width:100%;min-width:0}
+input[type=date],input[type=time]{-webkit-appearance:none;appearance:none;display:block}
+input::placeholder,textarea::placeholder{color:color-mix(in srgb,var(--muted) 70%,transparent)}
+textarea{resize:vertical;line-height:1.6}
+input:focus,select:focus,textarea:focus{outline:2px solid var(--accent);outline-offset:1px;border-color:transparent}
+.grid2{display:flex;gap:10px;flex-wrap:wrap}
+.grid2>div{flex:1 1 180px;min-width:0}
+.grid2>div.wide{flex:2 1 240px}
+.seg{display:flex;gap:5px;flex-wrap:wrap}
+.seg button,.rgrid button,.tgrid button{flex:1 1 0;border:1px solid var(--line);background:var(--card2);color:var(--muted);font:inherit;
+  font-size:13.5px;font-weight:800;padding:9px 8px;border-radius:10px;cursor:pointer;min-height:46px;transition:.15s;min-width:72px}
+.seg button:hover,.rgrid button:hover,.tgrid button:hover{border-color:var(--accent)}
+.seg button.on,.rgrid button.on,.tgrid button.on{border-color:var(--accent);color:var(--accent);background:color-mix(in srgb,var(--accent) 10%,transparent)}
+.seg button .s,.rgrid button .s,.tgrid button .s{display:block;font-size:11px;font-weight:600;color:var(--muted);margin-top:1px;line-height:1.4}
+.seg button.on .s,.rgrid button.on .s,.tgrid button.on .s{color:var(--accent)}
+.rgrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px}
+.rgrid button{min-width:0;padding:8px 6px}
+@media (min-width:600px){.rgrid{grid-template-columns:repeat(3,minmax(0,1fr))}}
+/* 문서 종류 — 휴대폰 2칸, 넓으면 4칸 */
+.tgrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:7px}
+.tgrid button{min-width:0;padding:11px 10px;text-align:left;min-height:64px}
+.tgrid button b{display:block;font-size:14.5px;font-weight:800;color:var(--fg)}
+.tgrid button.on b{color:var(--accent)}
+@media (min-width:600px){.tgrid{grid-template-columns:repeat(3,minmax(0,1fr))}}
+.rinfo{margin-top:10px;border-radius:11px;padding:9px 11px 9px 12px;font-size:12.5px;font-weight:700;line-height:1.65;border-left:3px solid}
+.rinfo:empty{display:none}
+.rinfo.ok{background:var(--okbg);color:var(--ok)}
+.rinfo.warn{background:var(--warnbg);color:var(--warn)}
+.rinfo.info{background:var(--infobg);color:var(--info)}
+.chk{display:flex;align-items:flex-start;gap:9px;font-size:14px;font-weight:700;cursor:pointer;padding:8px 0;margin-top:4px}
+.chk input{width:20px;height:20px;accent-color:var(--accent);flex:0 0 auto;margin:2px 0 0}
+.chk .d{display:block;font-size:12.5px;font-weight:600;color:var(--muted);line-height:1.6;margin-top:1px}
+.unit{display:flex;gap:8px;align-items:center}
+.unit input{flex:1 1 auto}
+.unit span{flex:0 0 auto;font-size:14px;font-weight:800;color:var(--muted)}
+.unit.short input{flex:0 1 90px;text-align:center}
+.sub{border-left:3px solid color-mix(in srgb,var(--accent) 30%,transparent);padding-left:12px;margin-left:2px}
+.chips{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}
+.chips:empty{display:none}
+.chips button{border:1px solid var(--line);background:var(--card);color:var(--muted);font:inherit;font-size:12.5px;font-weight:700;
+  padding:6px 11px;border-radius:999px;cursor:pointer;min-height:38px;text-align:left}
+.chips button:hover{border-color:var(--accent);color:var(--accent)}
+.chips button.on{border-color:var(--accent);color:var(--accent);background:color-mix(in srgb,var(--accent) 9%,transparent)}
+.party{border:1px solid var(--line);border-radius:12px;padding:12px;margin-top:12px;background:var(--card2)}
+.party.first{margin-top:0}
+.party .grid2{margin-top:8px}
+.party .grid2:first-of-type{margin-top:0}
+.party input,.party textarea{background:var(--card)}
+.ph{display:flex;align-items:center;gap:8px;font-size:14px;font-weight:800;margin-bottom:9px}
+.ph em{font-style:normal;font-size:11.5px;font-weight:700;color:var(--muted);border:1px solid var(--line);border-radius:999px;padding:1px 8px;background:var(--card)}
+.fine{font-size:12px;font-weight:600;color:var(--muted);line-height:1.65;margin:9px 0 0}
+.fine b{color:var(--fg)}
+.cnote{font-size:12px;font-weight:700;color:var(--accent);margin:7px 0 0;line-height:1.6}
+.cnote:empty{display:none}
+
+.mini{border:1px solid var(--line);background:var(--card);color:var(--fg);font:inherit;font-size:13px;font-weight:700;
+  padding:9px 14px;border-radius:999px;cursor:pointer;min-height:42px;transition:.15s}
+.mini:hover{border-color:var(--accent)}
+.btn{flex:1 1 130px;border:1px solid var(--line);background:var(--card2);color:var(--fg);font:inherit;font-size:14px;font-weight:800;
+  padding:11px 12px;border-radius:12px;cursor:pointer;min-height:48px;transition:.15s;display:inline-flex;align-items:center;justify-content:center;gap:6px;text-align:center}
+.btn:hover:not(:disabled){border-color:var(--accent)}
+.btn:disabled{opacity:.5;cursor:progress}
+.btn.pri{background:linear-gradient(135deg,var(--accent),var(--accent2));color:#fff;border-color:transparent;box-shadow:var(--shadow)}
+@media (prefers-color-scheme:dark){.btn.pri{color:var(--afg)}}
+.actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
+.actions .btn.pri{flex-basis:100%}
+
+/* ── 결과 카드 ── */
+.pv h2 .pvinfo{letter-spacing:.02em;font-weight:700}
+.pv-pages{display:flex;flex-direction:column;gap:12px;background:color-mix(in srgb,var(--muted) 14%,var(--card2));border-radius:12px;padding:12px;
+  border:1px solid var(--line)}
+.pv-pages canvas{display:block;width:100%;height:auto;background:#fff;border-radius:2px;box-shadow:0 1px 3px rgba(0,0,0,.18),0 6px 18px -10px rgba(0,0,0,.35);cursor:zoom-in}
+
+/* ── 점검 ── */
+.checks{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:7px}
+.checks li{position:relative;border-radius:11px;padding:9px 11px 9px 34px;font-size:12.5px;font-weight:600;line-height:1.65}
+.checks li b{font-weight:800}
+.checks li::before{position:absolute;left:10px;top:9px;width:17px;height:17px;border-radius:50%;display:grid;place-items:center;
+  font-size:10.5px;font-weight:900;line-height:1}
+.checks li.ok{background:var(--okbg);color:var(--ok)}
+.checks li.ok::before{content:"✓";background:var(--ok);color:var(--okbg)}
+.checks li.info{background:var(--infobg);color:var(--info)}
+.checks li.info::before{content:"i";background:var(--info);color:var(--infobg)}
+.checks li.warn{background:var(--warnbg);color:var(--warn)}
+.checks li.warn::before{content:"!";background:var(--warn);color:var(--warnbg)}
+.checks li.bad{background:var(--dangerbg);color:var(--danger)}
+.checks li.bad::before{content:"✕";background:var(--danger);color:var(--dangerbg)}
+
+/* ── 안내 ── */
+.steps{list-style:none;margin:0;padding:0;counter-reset:st}
+.steps li{position:relative;padding-left:32px;margin-bottom:12px;font-size:14px;font-weight:600;line-height:1.7;counter-increment:st}
+.steps li:last-child{margin-bottom:0}
+.steps li::before{content:counter(st);position:absolute;left:0;top:1px;width:22px;height:22px;border-radius:7px;display:grid;place-items:center;
+  font-size:12px;font-weight:800;background:color-mix(in srgb,var(--accent) 14%,transparent);color:var(--accent)}
+.steps li b{font-weight:800}
+.steps li .d{display:block;font-size:12.5px;color:var(--muted);margin-top:2px}
+.tbw{overflow-x:auto;margin:0 -2px;-webkit-overflow-scrolling:touch}
+table.kt{width:100%;min-width:560px;border-collapse:collapse;font-size:13px;line-height:1.6}
+table.kt th,table.kt td{border:1px solid var(--line);padding:9px 10px;vertical-align:top;text-align:left}
+table.kt th{background:var(--card2);font-weight:800;white-space:nowrap}
+table.kt td b{font-weight:800}
+table.kt td.k{font-weight:800;white-space:nowrap}
+.tnote{font-size:12px;font-weight:600;color:var(--muted);line-height:1.7;margin:10px 0 0}
+details{border-top:1px solid var(--line);padding:12px 0}
+details:first-of-type{border-top:0}
+summary{cursor:pointer;font-weight:700;font-size:14px;list-style:none;padding:10px 0;margin:-10px 0}
+summary::-webkit-details-marker{display:none}
+summary::before{content:"＋ ";color:var(--accent);font-weight:800}
+details[open] summary::before{content:"－ "}
+details p{margin:8px 0 0;font-size:13.5px;color:var(--muted);line-height:1.8}
+details p b{color:var(--fg)}
+
+footer{text-align:center;color:var(--muted);font-size:12px;margin-top:22px;line-height:1.8}
+footer b{color:var(--fg)}
+footer a{color:inherit}
+
+/* ══ 주의 문구 ══ */
+.nbx{border:1px solid var(--warn);border-radius:14px;background:var(--warnbg);padding:14px 15px;margin-top:14px}
+.nbx-h{display:flex;align-items:center;gap:8px;font-size:13.5px;font-weight:800;color:var(--warn);margin:0 0 10px}
+.nbx-h .ic{flex:0 0 auto;width:19px;height:19px;border-radius:6px;background:var(--warn);color:var(--warnbg);
+  font-size:12px;font-weight:800;display:grid;place-items:center;line-height:1}
+.nbx ul{list-style:none;margin:0;padding:0}
+.nbx li{position:relative;padding-left:12px;margin-bottom:7px;font-size:12px;font-weight:600;line-height:1.68;color:var(--warn)}
+.nbx li:last-child{margin-bottom:0}
+.nbx li::before{content:"·";position:absolute;left:1px;top:-1px;font-weight:800}
+.nbx li b{font-weight:800}
+.nbx .nbx-f{margin:11px 0 0;padding-top:10px;border-top:1px solid color-mix(in srgb,var(--warn) 32%,transparent);
+  font-size:12px;font-weight:700;line-height:1.72;color:var(--warn)}
+.nbx .nbx-f b{font-weight:800}
+
+/* ── 모바일 하단 바 ── */
+#mbar{position:fixed;left:0;right:0;bottom:0;z-index:50;transform:translateY(115%);transition:transform .22s;
+  background:var(--card);border-top:1px solid var(--line);box-shadow:0 -8px 22px -14px rgba(0,0,0,.55);
+  padding:9px 14px calc(9px + env(safe-area-inset-bottom))}
+#mbar.on{transform:none}
+#mbar .in{max-width:700px;margin:0 auto;display:flex;align-items:center;gap:10px}
+#mbar .k{flex:1 1 auto;min-width:0;font-size:11px;font-weight:800;color:var(--muted);letter-spacing:.03em}
+#mbar .k b{display:block;font-size:13.5px;font-weight:800;color:var(--fg);letter-spacing:-.01em;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+#mbar .go{flex:0 0 auto;font:inherit;font-size:13px;font-weight:800;color:#fff;padding:10px 15px;border-radius:999px;border:0;cursor:pointer;
+  background:linear-gradient(135deg,var(--accent),var(--accent2));min-height:42px}
+@media (prefers-color-scheme:dark){#mbar .go{color:var(--afg)}}
+@media (min-width:980px){#mbar{display:none}}
+
+#toast{position:fixed;left:50%;bottom:calc(76px + env(safe-area-inset-bottom));transform:translate(-50%,20px);background:#151b2b;color:#fff;font-size:13.5px;font-weight:700;line-height:1.5;
+  padding:10px 16px;border-radius:14px;width:max-content;opacity:0;pointer-events:none;transition:.25s;z-index:99;max-width:92vw;text-align:center}
+#toast.show{opacity:1;transform:translate(-50%,0)}
+@media (prefers-color-scheme:dark){#toast{background:#e8edf8;color:#0b1430}}
+
+@media (max-width:430px){
+  .lab{flex-direction:column;align-items:stretch;gap:2px}
+  .lab .hint{text-align:left}
+  .card{padding:14px}
+  .seg button{font-size:13px;min-width:0}
+  .rgrid button{font-size:13px}
+  .tag{font-size:14px}
+  .rsbox{padding-left:0}
+  .tgrid button b{font-size:14px}
+}
+/* ══════════ 할부 계산기 전용 ══════════ */
+.gp{font-size:13.5px;font-weight:600;color:var(--muted);line-height:1.75;margin:10px 0 0}
+.gp b{color:var(--fg);font-weight:800}
+.row.first{margin-top:0}
+.layout{margin-top:0}
+
+/* ── 탭 ── 두 칸 */
+.modebar{margin:14px auto 0}
+.tabs{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px;background:var(--card);border:1px solid var(--line);border-radius:16px;padding:6px;box-shadow:var(--shadow)}
+.tabs button{border:1px solid transparent;background:transparent;color:var(--muted);font:inherit;font-size:15px;font-weight:800;
+  padding:10px 6px;border-radius:12px;cursor:pointer;min-height:56px;transition:.15s;display:flex;align-items:center;justify-content:center;gap:8px;white-space:nowrap}
+.tabs button .i{font-size:20px;line-height:1}
+.tabs button:hover{border-color:var(--accent)}
+.tabs button.on{border-color:var(--accent);color:var(--accent);background:color-mix(in srgb,var(--accent) 12%,var(--card))}
+
+/* ── 입력 ── */
+input[type=text].big-in,.unit.money input{font-size:19px;font-weight:800;text-align:right;letter-spacing:-.01em}
+.unit.short input{flex:0 1 110px;text-align:center;font-weight:800;font-size:17px}
+.unit.own{margin-top:8px}
+.unit.own span{font-size:12.5px;font-weight:700}
+.unit.own input{flex:0 1 80px;min-height:42px;font-size:15px}
+.inrow{display:flex;gap:8px;align-items:stretch}
+.inrow .unit{flex:1 1 auto;min-width:0}
+.seg.sm{flex:0 0 auto;flex-wrap:nowrap}
+.seg.sm button{min-width:58px;flex:0 0 auto;padding:8px 10px}
+.seg.num button{min-width:0;padding:9px 2px}
+.seg.tax{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px;margin-top:4px}
+.seg.tax button{min-width:0}
+@media (min-width:600px){.seg.tax{grid-template-columns:repeat(3,minmax(0,1fr))}}
+.chips button{min-height:38px;min-width:52px;text-align:center}
+.sub .lab:first-child{margin-top:12px}
+select{-webkit-appearance:none;appearance:none;background-image:linear-gradient(45deg,transparent 50%,var(--muted) 50%),linear-gradient(135deg,var(--muted) 50%,transparent 50%);
+  background-position:calc(100% - 18px) 50%,calc(100% - 13px) 50%;background-size:5px 5px;background-repeat:no-repeat;padding-right:32px}
+
+/* ── 부분 무이자 회차 ＋ − ── */
+.stp{display:inline-flex;align-items:center;gap:6px;background:var(--card2);border:1px solid var(--line);border-radius:14px;padding:5px}
+.stp button{width:46px;height:46px;border-radius:11px;border:1px solid var(--line);background:var(--card);color:var(--fg);font:inherit;font-size:22px;font-weight:700;line-height:1;cursor:pointer;padding:0}
+.stp button:hover:not(:disabled){border-color:var(--accent);color:var(--accent)}
+.stp button:disabled{opacity:.35;cursor:default}
+.stp b{min-width:96px;text-align:center;font-size:22px;font-weight:900;letter-spacing:-.02em}
+.stp b small{font-size:13px;font-weight:800;color:var(--muted);margin-left:2px}
+
+/* ── 결과 ── */
+.res{border-color:color-mix(in srgb,var(--accent) 34%,var(--line))}
+.big{text-align:center;padding:2px 0 4px}
+.big .bk{margin:0;font-size:13px;font-weight:800;color:var(--muted)}
+.big .bv{margin:2px 0 0;font-size:clamp(32px,9vw,42px);font-weight:900;letter-spacing:-.03em;line-height:1.2;color:var(--accent)}
+.big .bs{margin:6px 0 0;font-size:13px;font-weight:700;color:var(--muted);line-height:1.6}
+.res.bad .bv{color:var(--muted)}
+.res.bad .bs{color:var(--danger)}
+.balloon{margin:10px 0 0;padding:9px 12px;border-radius:11px;background:var(--warnbg);color:var(--warn);font-size:13.5px;font-weight:700;text-align:center;line-height:1.6}
+.balloon b{font-weight:900}
+.bar{display:flex;height:12px;border-radius:999px;overflow:hidden;background:var(--card2);margin:14px 0 4px;border:1px solid var(--line)}
+.bar i{display:block;height:100%}
+.bar i.p{background:linear-gradient(90deg,var(--accent),var(--accent2))}
+.bar i.i{background:var(--warn)}
+.kv{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin-top:12px}
+.kv div{background:var(--card2);border:1px solid var(--line);border-radius:12px;padding:10px 12px;min-width:0}
+.kv .k{display:block;font-size:12px;font-weight:800;color:var(--muted)}
+.kv b{display:block;font-size:17px;font-weight:900;margin-top:2px;letter-spacing:-.01em}
+.kv small{display:block;font-size:11.5px;font-weight:600;color:var(--muted);line-height:1.5;margin-top:2px}
+.kv div.i b{color:var(--warn)}
+.kv div.f{grid-column:1/-1}
+.law{margin:12px 0 0;border-radius:11px;padding:9px 11px 9px 12px;font-size:12.5px;font-weight:700;line-height:1.65;border-left:3px solid}
+.law:empty{display:none}
+.law.ok{background:var(--okbg);color:var(--ok)}
+.law.info{background:var(--infobg);color:var(--info)}
+.law b{font-weight:900}
+.res .actions .btn{flex:1 1 150px}
+
+/* ── 비교 · 상환표 ── */
+#xCar h3,#xCard h3,#guide h3{font-size:15px;font-weight:900;letter-spacing:-.01em;margin:20px 0 8px}
+#xCar h3:first-of-type,.cmp h3{margin-top:4px}
+.cmp{display:grid;grid-template-columns:minmax(0,1fr);gap:4px 18px}
+@media (min-width:760px){.cmp{grid-template-columns:repeat(2,minmax(0,1fr))}.cmp h3{margin-top:4px}}
+.cmp>div+div h3{margin-top:18px}
+@media (min-width:760px){.cmp>div+div h3{margin-top:4px}}
+table.ct{width:100%;border-collapse:collapse;font-size:13px;line-height:1.45;font-variant-numeric:tabular-nums}
+table.ct th,table.ct td{padding:8px 8px;border-bottom:1px solid var(--line);text-align:right;white-space:nowrap}
+table.ct th:first-child{text-align:left}
+table.ct thead th{font-size:11.5px;font-weight:800;color:var(--muted);background:var(--card2);border-bottom:1px solid var(--line)}
+table.ct tbody th{font-weight:800}
+table.ct small{display:block;font-size:11px;font-weight:600;color:var(--muted)}
+table.ct td small.up{color:var(--danger)}
+table.ct td small.dn{color:var(--ok)}
+table.ct tr.hl{background:color-mix(in srgb,var(--accent) 9%,transparent)}
+table.ct tr.hl th,table.ct tr.hl td{font-weight:900;color:var(--accent)}
+table.ct tfoot th,table.ct tfoot td{font-weight:900;border-top:2px solid var(--line);border-bottom:0}
+table.ct tr.bl{background:var(--warnbg)}
+table.ct tr.bl th,table.ct tr.bl td{color:var(--warn);font-weight:800}
+table.ct tr.fr td{color:var(--muted)}
+table.ct .tag{display:inline-block;font-size:11px;font-weight:800;color:var(--ok);background:var(--okbg);border-radius:999px;padding:1px 8px}
+table.st{min-width:440px}
+.up{color:var(--danger)}
+.dn{color:var(--ok)}
+.rr{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+.rr div{background:var(--card2);border:1px solid var(--line);border-radius:12px;padding:10px;text-align:center;min-width:0}
+.rr div.on{border-color:var(--accent);background:color-mix(in srgb,var(--accent) 8%,var(--card))}
+.rr .k{display:block;font-size:12px;font-weight:800;color:var(--muted)}
+.rr b{display:block;font-size:15.5px;font-weight:900;margin-top:2px}
+.rr small{display:block;font-size:11px;font-weight:600;color:var(--muted);line-height:1.45;margin-top:2px}
+.tool2{display:grid;grid-template-columns:minmax(0,1fr);gap:12px;margin-top:18px}
+@media (min-width:760px){.tool2{grid-template-columns:repeat(2,minmax(0,1fr))}}
+.t2{border:1px solid var(--line);border-radius:14px;padding:14px;background:var(--card2);min-width:0}
+.t2 h3{margin-top:0 !important}
+.t2 .gp{margin:0 0 10px}
+.t2 input{background:var(--card)}
+.t2 .unit.money input{font-size:17px}
+.qres{font-size:13.5px;font-weight:700;line-height:1.75;margin:10px 0 0}
+.qres:empty{display:none}
+.qres b{font-weight:900}
+.qres .warn{color:var(--warn)}
+details.all{border-top:0;padding:6px 0 0}
+details.all summary{font-size:13.5px;color:var(--accent)}
+
+/* ── 설명 ── */
+.formula{margin:10px 0 0;padding:11px 13px;border-radius:12px;background:var(--card2);border-left:3px solid var(--accent);font-size:14px;font-weight:800;line-height:1.7}
+.formula small{display:block;font-size:12px;font-weight:600;color:var(--muted);margin-top:3px}
+table.kt.mt{min-width:0;font-variant-numeric:tabular-nums}
+table.kt.mt td{text-align:right;white-space:nowrap}
+table.kt.mt td small{display:block;font-size:11px;font-weight:600;color:var(--muted)}
+table.kt.mt th:first-child,table.kt.mt td:first-child{text-align:left;font-weight:800}
+
+@media (max-width:430px){
+  .seg.num button{font-size:13px}
+  .kv b{font-size:16px}
+  .rr b{font-size:14px}
+  table.ct{font-size:12px}
+  table.ct th,table.ct td{padding:7px 5px}
+  table.ct .nar{display:none}
+  table.st{min-width:0}
+  table.ct.st td{white-space:normal}
+  table.kt.mt{font-size:12px}
+  table.kt.mt th,table.kt.mt td{padding:7px 5px;white-space:normal}
+  table.kt.mt thead th,table.kt.mt td:first-child{white-space:nowrap}
+  .inrow .seg.sm button{min-width:50px;padding:8px 6px}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<!-- 네이버·카카오 앱 안에서 열렸을 때만 보이는 띠 (body.inapp) -->
+<div class="iabar" id="iabar">
+  <div class="ia-t"><span id="iaMsg">앱 안에서는 상환표 파일 저장이 안 될 수 있어요.</span>
+    <small id="iaSub">계산은 그대로 돼요.</small></div>
+  <button class="ia-go" id="iaGo" type="button">크롬에서 열기</button>
+  <button class="ia-x" id="iaX" type="button" aria-label="안내 닫기">✕</button>
+</div>
+
+<header>
+  <div class="logo"><span class="ico">₩</span><span>할부 계산기</span></div>
+  <p class="tag"><b>자동차 할부 월 납입금과 카드 할부 수수료를 바로</b> · <span class="nw">신차·중고차</span> · <span class="nw">유예할부</span> · <span class="nw">무이자·부분 무이자</span> · <span class="nw">상환표</span></p>
+  <div class="badges">
+    <span class="badge">₩ 할부 이자 계산</span>
+    <span class="badge gray">견적서 금리 확인</span>
+    <span class="badge gray">중도상환·선결제</span>
+    <span class="badge gray">상환표 엑셀 저장</span>
+    <span class="badge gray">무료 · 설치·가입 없음</span>
+  </div>
+</header>
+
+<nav class="modebar" aria-label="할부 고르기">
+  <div class="tabs" role="tablist" data-seg="tab">
+    <button type="button" role="tab" data-v="car" class="on"><span class="i">🚗</span>자동차 할부</button>
+    <button type="button" role="tab" data-v="card"><span class="i">💳</span>카드 할부</button>
+  </div>
+</nav>
+
+<div class="layout">
+<main id="form">
+
+  <!-- ══ 자동차 할부 ══ -->
+  <section class="card" id="cCar">
+    <h2><span>자동차 할부 조건</span><button class="mini" id="cReset" type="button">처음 값으로</button></h2>
+    <div class="row first">
+      <div class="lab"><span>차 종류</span><span class="hint">취득세 계산이 달라져요</span></div>
+      <div class="seg" data-seg="c.kind">
+        <button type="button" data-v="new" class="on">신차</button>
+        <button type="button" data-v="used">중고차</button>
+      </div>
+    </div>
+    <div class="row">
+      <div class="lab"><label for="cPrice">차량 가격</label><span class="hint" id="cPriceTxt"></span></div>
+      <div class="unit money"><input type="text" inputmode="numeric" id="cPrice" autocomplete="off" aria-describedby="cPriceTxt"><span>만원</span></div>
+      <p class="fine" id="cPriceNote">옵션·탁송료까지 넣고 할인을 뺀 <b>최종 차값</b>을 넣으세요.</p>
+    </div>
+    <div class="row">
+      <div class="lab"><span>선수금</span><span class="hint" id="cDownTxt"></span></div>
+      <div class="inrow">
+        <div class="seg sm" data-seg="c.dm"><button type="button" data-v="pct" class="on">비율</button><button type="button" data-v="won">금액</button></div>
+        <div class="unit money"><input type="text" inputmode="decimal" id="cDown" autocomplete="off" aria-label="선수금"><span id="cDownU">%</span></div>
+      </div>
+      <div class="chips" id="cDownChips"></div>
+    </div>
+    <div class="row">
+      <div class="lab"><span>할부 기간</span><span class="hint" id="cNTxt"></span></div>
+      <div class="seg num" data-seg="c.n">
+        <button type="button" data-v="12">12</button><button type="button" data-v="24">24</button><button type="button" data-v="36">36</button><button type="button" data-v="48">48</button><button type="button" data-v="60" class="on">60</button><button type="button" data-v="72">72</button>
+      </div>
+      <div class="unit short own"><span>직접</span><input type="text" inputmode="numeric" id="cN" autocomplete="off" aria-label="할부 기간 개월 수"><span>개월 (1~120)</span></div>
+    </div>
+    <div class="row">
+      <div class="lab"><label for="cRate">연 금리</label><span class="hint">견적서·금융사 앱에 적힌 할부 금리</span></div>
+      <div class="unit short"><input type="text" inputmode="decimal" id="cRate" autocomplete="off"><span>%</span></div>
+    </div>
+    <div class="row">
+      <div class="lab"><span>갚는 방식</span></div>
+      <div class="seg" data-seg="c.m">
+        <button type="button" data-v="eq" class="on">원리금균등<span class="s">매달 같은 돈</span></button>
+        <button type="button" data-v="def">유예할부<span class="s">일부를 만기에 한 번에</span></button>
+      </div>
+      <div class="sub hide" id="cDefBox">
+        <div class="lab" style="margin-top:12px"><span>유예금</span><span class="hint" id="cDefTxt"></span></div>
+        <div class="inrow">
+          <div class="seg sm" data-seg="c.bm"><button type="button" data-v="pct" class="on">비율</button><button type="button" data-v="won">금액</button></div>
+          <div class="unit money"><input type="text" inputmode="decimal" id="cDef" autocomplete="off" aria-label="유예금"><span id="cDefU">%</span></div>
+        </div>
+        <div class="chips" id="cDefChips"></div>
+        <p class="fine">비율은 <b>차량 가격</b>에 대한 비율이에요. 유예금은 만기까지 원금이 줄지 않아 이자가 계속 붙어요.</p>
+      </div>
+    </div>
+    <label class="chk"><input type="checkbox" id="cTax"><span>처음 필요한 돈에 취득세도 넣기<span class="d">공채·번호판·보험료는 빼고 계산해요</span></span></label>
+    <div class="sub hide" id="cTaxBox">
+      <div class="seg tax" data-seg="c.tt">
+        <button type="button" data-v="car" class="on">일반 승용<span class="s">7%</span></button>
+        <button type="button" data-v="light">경차<span class="s">4% · 75만원 감면</span></button>
+        <button type="button" data-v="ev">전기·수소<span class="s">7% · 140만원 감면</span></button>
+        <button type="button" data-v="van">승합·화물<span class="s">5%</span></button>
+        <button type="button" data-v="own">직접 입력</button>
+      </div>
+      <div class="unit short hide" id="cTaxOwnBox"><span>세율</span><input type="text" inputmode="decimal" id="cTaxOwn" autocomplete="off" aria-label="취득세율"><span>%</span></div>
+      <p class="fine" id="cTaxNote"></p>
+    </div>
+  </section>
+
+  <!-- ══ 카드 할부 ══ -->
+  <section class="card hide" id="cCard">
+    <h2><span>카드 할부 조건</span><button class="mini" id="kReset" type="button">처음 값으로</button></h2>
+    <div class="row first">
+      <div class="lab"><label for="kAmt">결제 금액</label><span class="hint" id="kAmtTxt"></span></div>
+      <div class="unit money"><input type="text" inputmode="numeric" id="kAmt" autocomplete="off"><span>원</span></div>
+    </div>
+    <div class="row">
+      <div class="lab"><span>할부 개월</span><span class="hint" id="kNTxt"></span></div>
+      <div class="seg num" data-seg="k.n">
+        <button type="button" data-v="2">2</button><button type="button" data-v="3">3</button><button type="button" data-v="4">4</button><button type="button" data-v="5">5</button><button type="button" data-v="6" class="on">6</button><button type="button" data-v="10">10</button><button type="button" data-v="12">12</button><button type="button" data-v="24">24</button>
+      </div>
+      <div class="unit short own"><span>직접</span><input type="text" inputmode="numeric" id="kN" autocomplete="off" aria-label="할부 개월 수"><span>개월 (2~36)</span></div>
+    </div>
+    <div class="row">
+      <div class="lab"><label for="kRate">연 할부 수수료율</label><span class="hint">카드 앱·명세서의 「할부 수수료율」</span></div>
+      <div class="unit short"><input type="text" inputmode="decimal" id="kRate" autocomplete="off"><span>%</span></div>
+      <p class="fine">카드사·개월 수·신용도마다 달라요. 법정 최고금리(<b>연 20%</b>)를 넘지는 않아요.</p>
+    </div>
+    <div class="row">
+      <div class="lab"><span>무이자</span></div>
+      <div class="seg" data-seg="k.f">
+        <button type="button" data-v="none" class="on">일반 할부<span class="s">수수료 모두 냄</span></button>
+        <button type="button" data-v="all">무이자<span class="s">수수료 0원</span></button>
+        <button type="button" data-v="part">부분 무이자<span class="s">앞 회차만 냄</span></button>
+      </div>
+      <div class="sub hide" id="kPartBox">
+        <div class="lab" style="margin-top:12px"><span>회원이 내는 회차</span><span class="hint" id="kKTxt"></span></div>
+        <div class="stp" id="kK"><button type="button" data-d="-1" aria-label="한 회차 줄이기">−</button><b>1~<span class="v"></span><small>회차</small></b><button type="button" data-d="1" aria-label="한 회차 늘리기">＋</button></div>
+        <p class="fine">「10개월 부분 무이자(1~3회차 회원 부담)」처럼 안내문에 적힌 회차를 넣으세요. 카드사·가맹점·달마다 바뀌어요.</p>
+      </div>
+    </div>
+    <div class="row">
+      <div class="lab"><span>수수료 계산</span></div>
+      <div class="seg" data-seg="k.mode">
+        <button type="button" data-v="month" class="on">한 달 단위<span class="s">간단히</span></button>
+        <button type="button" data-v="date">결제일 기준<span class="s">날짜까지 넣어 정확히</span></button>
+      </div>
+      <div class="sub hide" id="kDateBox">
+        <div class="grid2" style="margin-top:12px">
+          <div><div class="lab"><label for="kUse">이용일(산 날)</label></div><input type="date" id="kUse"></div>
+          <div><div class="lab"><label for="kDay">카드 결제일</label></div><select id="kDay"></select></div>
+        </div>
+        <div class="lab" style="margin-top:12px"><label for="kFirst">첫 결제일</label><span class="hint" id="kFirstTxt"></span></div>
+        <input type="date" id="kFirst">
+        <p class="fine">카드사는 <b>남은 원금 × 수수료율 × 일수 ÷ 365</b>로 셉니다. 첫 회차는 산 날부터 첫 결제일까지라, 언제 샀느냐에 따라 2주 남짓에서 6주 가까이까지 달라져요. 첫 결제일은 카드 앱의 결제 예정일로 고쳐 넣으면 더 정확해요.</p>
+      </div>
+    </div>
+  </section>
+</main>
+
+<aside class="side">
+  <!-- ══ 자동차 할부 결과 ══ -->
+  <section class="card res" id="rCar" aria-live="polite">
+    <h2><span>계산 결과</span><span class="opt" id="rcOpt"></span></h2>
+    <div class="big">
+      <p class="bk">월 납입금</p>
+      <p class="bv" id="rcM"></p>
+      <p class="bs" id="rcMs"></p>
+    </div>
+    <p class="balloon hide" id="rcB"></p>
+    <div class="bar" id="rcBar" aria-hidden="true"><i class="p"></i><i class="i"></i></div>
+    <div class="kv" id="rcKV"></div>
+    <p class="rinfo info" id="rcNote"></p>
+    <div class="actions">
+      <button class="btn" id="rcLink" type="button">🔗 이 계산 링크 보내기</button>
+      <button class="btn" id="rcCsv" type="button">📄 상환표 저장(엑셀)</button>
+    </div>
+  </section>
+
+  <!-- ══ 카드 할부 결과 ══ -->
+  <section class="card res hide" id="rCard" aria-live="polite">
+    <h2><span>계산 결과</span><span class="opt" id="rkOpt"></span></h2>
+    <div class="big">
+      <p class="bk">첫 달 청구액</p>
+      <p class="bv" id="rkFirst"></p>
+      <p class="bs" id="rkNext"></p>
+    </div>
+    <div class="bar" id="rkBar" aria-hidden="true"><i class="p"></i><i class="i"></i></div>
+    <div class="kv" id="rkKV"></div>
+    <p class="law" id="rkLaw"></p>
+    <div class="actions">
+      <button class="btn" id="rkLink" type="button">🔗 이 계산 링크 보내기</button>
+      <button class="btn" id="rkCsv" type="button">📄 청구표 저장(엑셀)</button>
+    </div>
+  </section>
+</aside>
+</div>
+
+<!-- ══ 자동차 할부 더 보기 ══ -->
+<section class="card" id="xCar">
+  <h2><span>조건을 바꾸면 얼마나 달라질까</span></h2>
+  <div class="cmp">
+    <div><h3>할부 기간별</h3><div class="tbw"><table class="ct" id="tcN"></table></div></div>
+    <div><h3>선수금별</h3><div class="tbw"><table class="ct" id="tcD"></table></div></div>
+  </div>
+  <h3>금리가 1%p 다르면</h3>
+  <div class="rr" id="tcR"></div>
+
+  <div class="tool2">
+    <div class="t2" id="qBox">
+      <h3>🔎 견적서 금리 확인</h3>
+      <p class="gp">딜러 견적서에 <b>월 납입금</b>만 크게 적혀 있다면, 위 조건(차값·선수금·기간·유예금)에서 그 돈이 연 몇 %인지 거꾸로 찾아 드려요.</p>
+      <div class="unit money"><input type="text" inputmode="numeric" id="qM" autocomplete="off" aria-label="견적서 월 납입금" placeholder="견적서 월 납입금"><span>원</span></div>
+      <p class="qres" id="qRes"></p>
+    </div>
+    <div class="t2" id="pBox">
+      <h3>💰 중간에 다 갚으면(중도상환)</h3>
+      <div class="grid2">
+        <div><div class="lab"><label for="pK">몇 회차까지 내고</label></div><div class="unit"><input type="text" inputmode="numeric" id="pK" autocomplete="off"><span>회차</span></div></div>
+        <div><div class="lab"><label for="pFee">중도상환 수수료율</label></div><div class="unit"><input type="text" inputmode="decimal" id="pFee" autocomplete="off"><span>%</span></div></div>
+      </div>
+      <p class="qres" id="pRes"></p>
+      <p class="fine">수수료는 <b>남은 원금 × 수수료율 × 남은 기간 ÷ 전체 기간</b>으로 셌어요. 계약서의 수수료율과 면제 조건을 확인하세요.</p>
+    </div>
+  </div>
+
+  <h3>상환표</h3>
+  <div class="tbw"><table class="ct st" id="tsY"></table></div>
+  <details class="all" id="tsAllBox">
+    <summary id="tsAllSum">회차별 전체 보기</summary>
+    <div class="tbw"><table class="ct st" id="tsAll"></table></div>
+  </details>
+</section>
+
+<!-- ══ 카드 할부 더 보기 ══ -->
+<section class="card hide" id="xCard">
+  <h2><span>회차별 청구표</span><span class="opt" id="tkOpt"></span></h2>
+  <div class="tbw"><table class="ct st" id="tkS"></table></div>
+  <div class="tool2">
+    <div class="t2">
+      <h3>개월 수별 수수료</h3>
+      <div class="tbw"><table class="ct" id="tkN"></table></div>
+      <p class="fine">같은 수수료율로 셌어요. 실제로는 개월 수가 길수록 수수료율이 더 높은 카드가 많아요.</p>
+    </div>
+    <div class="t2" id="ppBox">
+      <h3>💰 남은 할부를 한 번에 내면(선결제)</h3>
+      <div class="unit"><span>첫 회차부터</span><input type="text" inputmode="numeric" id="ppK" autocomplete="off" aria-label="선결제 전에 낸 회차"><span>회차까지 내고</span></div>
+      <p class="qres" id="ppRes"></p>
+      <p class="fine">선결제하면 그 뒤 회차의 수수료가 빠져요. 선결제한 날까지의 수수료는 붙을 수 있고, 무이자 회차는 아낄 것이 없어요.</p>
+    </div>
+  </div>
+</section>
+
+<section class="card" id="guide">
+  <h2><span>자동차 할부 계산법 · 카드 할부 수수료 계산법</span></h2>
+  <h3>자동차 할부 월 납입금은 이렇게 셉니다</h3>
+  <p class="gp">자동차 할부는 대부분 <b>원리금균등</b>입니다. 매달 같은 돈을 내고, 그 안에서 이자(남은 원금 × 연 금리 ÷ 12)를 먼저 채우고 나머지로 원금을 갚아요. 그래서 처음에는 이자가 많고 갈수록 원금이 많아집니다.</p>
+  <p class="formula">월 납입금 = 할부원금 × r × (1 + r)<sup>n</sup> ÷ ((1 + r)<sup>n</sup> − 1)<small>r = 연 금리 ÷ 12 · n = 개월 수 · 할부원금 = 차값 − 선수금</small></p>
+  <p class="gp">예를 들어 차값 <b>3,500만원</b>에 선수금 <b>700만원</b>(20%)을 내고 남은 <b>2,800만원</b>을 <b>60개월 · 연 4.9%</b>로 할부하면 월 납입금은 <b>52만 7,113원</b>, 60개월 동안 내는 이자는 모두 <b>362만 6,727원</b>입니다. 같은 조건을 <b>36개월</b>로 줄이면 월 납입금은 83만 7,929원로 늘지만 이자는 216만 5,409원로 줄어요.</p>
+  <h3>연 5% 기준 자동차 할부 월 납입금 표</h3>
+  <div class="tbw"><table class="kt mt">
+    <thead><tr><th>할부원금</th><th>36개월</th><th>48개월</th><th>60개월</th><th>72개월</th></tr></thead>
+    <tbody>
+      <tr><td>1,000만원</td><td>299,709<small>이자 78만 9,502원</small></td><td>230,293<small>이자 105만 4,034원</small></td><td>188,712<small>이자 132만 2,706원</small></td><td>161,049<small>이자 159만 5,510원</small></td></tr>
+      <tr><td>2,000만원</td><td>599,418<small>이자 157만 9,031원</small></td><td>460,586<small>이자 210만 8,093원</small></td><td>377,425<small>이자 264만 5,443원</small></td><td>322,099<small>이자 319만 1,060원</small></td></tr>
+      <tr><td>3,000만원</td><td>899,127<small>이자 236만 8,551원</small></td><td>690,879<small>이자 316만 2,154원</small></td><td>566,137<small>이자 396만 8,189원</small></td><td>483,148<small>이자 478만 6,613원</small></td></tr>
+      <tr><td>4,000만원</td><td>1,198,836<small>이자 315만 8,075원</small></td><td>921,172<small>이자 421만 6,218원</small></td><td>754,849<small>이자 529만 929원</small></td><td>644,197<small>이자 638만 2,164원</small></td></tr>
+      <tr><td>5,000만원</td><td>1,498,545<small>이자 394만 7,597원</small></td><td>1,151,465<small>이자 527만 279원</small></td><td>943,562<small>이자 661만 3,665원</small></td><td>805,247<small>이자 797만 7,710원</small></td></tr>
+    </tbody>
+  </table></div>
+  <p class="tnote">칸의 큰 숫자는 월 납입금(원)입니다. 원리금균등, 연 5%, 원 단위 반올림. 칸 아래 작은 글씨는 그 기간 동안 내는 이자 합계입니다. 금리가 다르면 위 계산기에 넣어 보세요.</p>
+  <h3>유예할부란</h3>
+  <p class="gp">유예할부는 차값의 일부(<b>유예금</b>)를 만기까지 미뤄 두고, 매달은 나머지 원금과 이자만 내는 방식입니다. 월 납입금이 확 줄지만 유예금에는 만기까지 이자가 계속 붙어 <b>총 이자는 더 많아지고</b>, 만기에 유예금을 한 번에 내거나 다시 할부하거나 차를 팔아 갚아야 해요. 위 예에서 유예금을 차값의 30%(1,050만원)로 두면 월 납입금은 52만 7,113원 → <b>37만 2,320원</b>로 줄고, 이자는 362만 6,727원 → <b>483만 9,191원</b>로 늘어납니다.</p>
+  <h3>카드 할부 수수료는 이렇게 셉니다</h3>
+  <p class="gp">카드 할부는 결제 금액을 개월 수로 똑같이 나눈 <b>원금</b>에, 그달의 <b>수수료</b>를 더해 청구합니다. 수수료는 아직 갚지 않은 원금에만 붙어서 회차가 지날수록 줄어요.</p>
+  <p class="formula">회차 수수료 = 남은 원금 × 연 수수료율 × 이용 일수 ÷ 365<small>원금 = 결제 금액 ÷ 개월 수(나머지 끝수는 첫 회차에) · 한 달 단위로 간단히 셀 때는 일수 ÷ 365 대신 1 ÷ 12</small></p>
+  <p class="gp">120만원을 <b>6개월 · 연 15%</b>로 할부하면 매달 원금은 20만원이고, 수수료는 첫 달 15,000원에서 마지막 달 2,500원까지 줄어 모두 <b>52,500원</b>입니다. 결제 금액의 4.38%를 더 내는 셈이에요. 첫 결제일까지 날짜가 길면 첫 달 수수료가 이보다 커집니다.</p>
+  <h3>100만원 카드 할부 수수료 표</h3>
+  <div class="tbw"><table class="kt mt">
+    <thead><tr><th>할부 개월</th><th>연 10%</th><th>연 15%</th><th>연 19.9%</th></tr></thead>
+    <tbody>
+      <tr><td>2개월</td><td>12,499원</td><td>18,750원</td><td>24,874원</td></tr>
+      <tr><td>3개월</td><td>16,665원</td><td>24,999원</td><td>33,165원</td></tr>
+      <tr><td>6개월</td><td>29,163원</td><td>43,747원</td><td>58,038원</td></tr>
+      <tr><td>10개월</td><td>45,830원</td><td>68,750원</td><td>91,205원</td></tr>
+      <tr><td>12개월</td><td>54,160원</td><td>81,243원</td><td>107,784원</td></tr>
+      <tr><td>24개월</td><td>104,153원</td><td>156,236원</td><td>207,276원</td></tr>
+    </tbody>
+  </table></div>
+  <p class="tnote">한 달 단위로 센 총 수수료(원 미만 버림). 수수료율은 카드사·개월 수·신용도에 따라 다르니 카드 앱의 수수료율을 넣어 계산해 보세요.</p>
+  <h3>부분 무이자 할부는 공짜가 아닙니다</h3>
+  <p class="gp">부분 무이자는 <b>앞 몇 회차의 수수료는 회원이 내고</b>, 나머지 회차만 면제해 주는 방식이에요. 수수료는 원금이 가장 많이 남은 앞 회차에 가장 크게 붙기 때문에, 면제받는 몫이 생각보다 작습니다. 120만원을 10개월 부분 무이자(1~3회차 회원 부담) · 연 15%로 하면 회원이 내는 수수료는 <b>40,500원</b>, 일반 할부 수수료 82,500원의 49%입니다.</p>
+  <h3>20만원 이상 · 3개월 이상 할부면 철회권과 항변권</h3>
+  <p class="gp">신용카드로 <b>20만원 이상</b>을 <b>3개월 이상</b> 할부로 샀다면 할부거래법의 보호를 받아요. 계약서나 물건을 받은 날부터 <b>7일 안에는 철회</b>할 수 있고(철회권), 물건이 오지 않거나 계약이 해제됐는데도 판매자가 해결해 주지 않으면 <b>남은 할부금을 내지 않겠다고</b> 카드사에 알릴 수 있어요(항변권). 사업 목적으로 산 물건, 써서 가치가 크게 떨어진 물건 등은 철회가 제한될 수 있고, 이미 낸 회차는 항변권으로 돌려받지 못합니다. 그래서 큰돈을 결제할 때 일부러 3개월 이상 할부(무이자)를 고르기도 해요.</p>
+</section>
+
+<section class="card" id="faq">
+  <h2><span>자주 묻는 질문</span></h2>
+  <details>
+    <summary>할부 계산기는 어떻게 쓰나요?</summary>
+    <p>위에서 <b>자동차 할부</b>나 <b>카드 할부</b>를 고르고 금액·기간·금리(수수료율)를 넣으면 결과가 바로 바뀝니다. 자동차는 월 납입금·총 이자·상환표를, 카드는 회차별 청구액과 총 수수료를 보여 줘요. 상환표는 엑셀에서 열리는 파일(CSV)로 저장할 수 있습니다.</p>
+  </details>
+  <details>
+    <summary>신차와 중고차 할부 계산이 다른가요?</summary>
+    <p>월 납입금을 세는 공식은 같아요. 다른 것은 <b>금리</b>와 <b>취득세 기준</b>입니다. 중고차 할부는 보통 신차보다 금리가 높으니 견적서의 금리를 그대로 넣으세요. 취득세는 신차가 부가세를 뺀 값(차값 ÷ 1.1), 중고차는 산 값에 세율을 곱해 셉니다.</p>
+  </details>
+  <details>
+    <summary>선수금은 얼마나 내는 게 좋을까요?</summary>
+    <p>선수금을 많이 낼수록 할부원금이 줄어 <b>이자가 그만큼 줄어요</b>. 결과 아래 「선수금별」 표에서 선수금 10%p마다 월 납입금과 총 이자가 얼마나 달라지는지 볼 수 있습니다. 다만 비상금까지 털어 넣기보다는, 할부 금리와 그 돈을 예금에 넣었을 때의 이자를 견줘 정하세요.</p>
+  </details>
+  <details>
+    <summary>견적서 월 납입금이 계산기와 달라요.</summary>
+    <p>견적서에는 <b>인지세·보증료·용품 비용</b>이 할부원금에 섞여 있거나, 첫 회차 날짜가 한 달보다 길어 이자가 달라지는 경우가 많아요. 「견적서 금리 확인」에 견적서의 월 납입금을 넣으면 그 돈이 실제로 연 몇 %인지 알려 드립니다. 적힌 금리보다 크게 높게 나오면 할부원금에 무엇이 들어갔는지 물어보세요.</p>
+  </details>
+  <details>
+    <summary>유예할부와 원리금균등 중 무엇이 나은가요?</summary>
+    <p>총 이자는 늘 <b>원리금균등이 적어요</b>. 유예할부는 월 납입금을 낮추는 대신 유예금에 만기까지 이자가 붙습니다. 만기에 차를 바꿀 계획이거나 당분간 매달 내는 돈을 줄여야 할 때 고르는 방식이고, 만기에 유예금을 어떻게 갚을지 먼저 정해 두는 것이 좋아요.</p>
+  </details>
+  <details>
+    <summary>카드 할부 첫 달 수수료가 왜 더 많아요?</summary>
+    <p>첫 회차에는 원금이 모두 남아 있어서 수수료가 가장 커요. 게다가 첫 회차는 <b>산 날부터 첫 결제일까지의 날짜</b>로 세기 때문에, 결제일이 막 지난 뒤에 사서 첫 결제일까지 40일 넘게 걸리면 더 커지고, 첫 결제일을 2~3주 앞두고 샀다면 오히려 줄어요. 「결제일 기준」으로 바꾸고 이용일·결제일을 넣으면 회차마다 며칠 치 수수료인지 함께 보여 줍니다.</p>
+  </details>
+  <details>
+    <summary>무이자 할부는 정말 비용이 없나요?</summary>
+    <p>전 회차 무이자는 수수료가 0원입니다. 다만 <b>부분 무이자</b>는 앞 회차 수수료를 회원이 내고, 무이자 행사는 카드사·가맹점·결제 방법(간편결제 등)에 따라 빠지는 경우가 있어요. 결제 전 카드 앱의 행사 안내를 확인하세요.</p>
+  </details>
+  <details>
+    <summary>할부를 중간에 다 갚으면 이자를 돌려받나요?</summary>
+    <p>이미 낸 이자는 돌려받지 않지만 <b>앞으로 낼 이자(수수료)가 빠집니다</b>. 자동차 할부는 중도상환 수수료가 붙을 수 있어 「중간에 다 갚으면」에서 아끼는 이자와 수수료를 견줘 보세요. 카드 할부 선결제는 대개 수수료가 없어요.</p>
+  </details>
+  <details>
+    <summary>넣은 금액은 어디에 저장되나요?</summary>
+    <p>계산은 모두 <b>이 브라우저 안에서</b> 합니다. 마지막에 넣은 조건만 이 기기의 브라우저에 남아 다음에 열 때 이어서 보여 주고, 어디로도 보내지 않아요. 「링크 보내기」를 누르면 조건이 링크 # 뒤에 담겨, 받은 사람도 같은 계산을 볼 수 있습니다.</p>
+  </details>
+</section>
+
+<!-- ══ 주의 문구 ══ -->
+<div class="nbx">
+  <div class="nbx-h"><span class="ic">!</span><span>쓰기 전에 확인하세요</span></div>
+  <ul>
+    <li>결과는 <b>참고용 어림값</b>이에요. 실제 납입금·수수료는 금융사·카드사의 일수 계산, 끝수 처리, 첫 회차 날짜, 인지세·보증료 같은 부대비용에 따라 달라질 수 있어요.</li>
+    <li>금리와 수수료율은 사람마다 다릅니다. 계약 전에는 <b>금융사가 준 상환 계획표와 상품설명서</b>로 확인하세요.</li>
+    <li>취득세는 일반적인 세율과 감면 한도로 어림한 값이에요. 감면 조건·공채 매입·등록 비용은 지역과 차에 따라 다르니 <b>위택스나 등록 대행</b>에서 확인하세요.</li>
+    <li>이 도구는 특정 금융사·카드사·상품을 권하지 않아요. 돈을 빌리는 결정은 갚을 수 있는 범위 안에서 하세요.</li>
+  </ul>
+  <p class="nbx-f">이 도구는 <b>있는 그대로 제공되며</b>, 계산 결과를 써서 생긴 일에 대해 <b>제작자와 운영자는 법적 책임을 지지 않습니다.</b></p>
+</div>
+
+<footer>
+  <b>할부 계산기</b> · 자동차 할부 계산기 · 차 할부 계산기 · 중고차 할부 계산기 · 신차 할부 계산기 · 유예할부 계산 · 카드 할부 계산기 · 할부 이자 계산기 · 카드 할부 수수료 계산 · 부분 무이자<br>
+  함께 보면 좋은 도구: <a href="https://hwj-hub.github.io/loan_calculator/" target="_blank" rel="noopener">대출 이자 계산기</a> · <a href="https://hwj-hub.github.io/household_budget/" target="_blank" rel="noopener">엑셀 가계부 만들기</a> · <a href="https://hwj-hub.github.io/online_excel/" target="_blank" rel="noopener">온라인 엑셀</a><br>
+  계산식은 카드사 공시 산식(남은 원금 × 수수료율 × 일수 ÷ 365)과 원리금균등 공식을 따랐습니다(2026년 11월)<br>
+  입력한 내용은 어디에도 전송되지 않으며, 페이지를 연 뒤에는 인터넷 없이도 동작합니다 · 외부 라이브러리 없음
+</footer>
+</div>
+
+<!-- 휴대폰 아래 띠 — 입력하는 동안 결과 -->
+<div id="mbar" aria-hidden="true">
+  <div class="in">
+    <div class="k"><span id="mbK">월 납입금</span><b id="mbV"></b></div>
+    <button class="go" id="mbGo" type="button">결과 보기</button>
+  </div>
+</div>
+
+<div id="toast" role="status" aria-live="polite"></div>
+<script>
+"use strict";
+/* ════════════════════════════════════════════════════════════
+   할부 계산기 — 라이브러리 없이 순수 JS
+   자동차 할부(원리금균등 · 유예할부 · 견적 금리 역산 · 중도상환 · 취득세) · 카드 할부(무이자 · 부분 무이자 · 결제일 기준 일수 · 선결제)
+   기억(마지막 조건)은 이 브라우저(localStorage, installment_calculator.)에만. 링크는 # 뒤에 조건만 싣는다(서버 없음)
+   ════════════════════════════════════════════════════════════ */
+const $ = id => document.getElementById(id);
+const ESC = { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' };
+const esc = s => String(s).replace(/[&<>"']/g, c => ESC[c]);
+let toastT = 0;
+function toast(msg, ms) {
+  const t = $('toast'); t.textContent = msg; t.classList.add('show');
+  clearTimeout(toastT); toastT = setTimeout(() => t.classList.remove('show'), ms || 2600);
+}
+const clamp = (v, a, b) => Math.min(b, Math.max(a, v));
+const coarse = () => window.matchMedia('(pointer:coarse)').matches;
+
+/* ── 숫자 ── 1,234,567원 · 3,500만원 · 52만 9,810원 */
+const comma = n => Math.round(n).toLocaleString('en-US');
+const won = n => comma(n) + '원';
+function manWon(n) {
+  n = Math.round(n);
+  if (Math.abs(n) < 10000) return comma(n) + '원';
+  const neg = n < 0 ? '−' : '', a = Math.abs(n), m = Math.floor(a / 10000), r = a % 10000;
+  return neg + comma(m) + '만' + (r ? ' ' + comma(r) : '') + '원';
+}
+const pct = (v, d) => (Math.round(v * Math.pow(10, d)) / Math.pow(10, d)).toFixed(d).replace(/\.?0+$/, '') + '%';
+/* 입력칸 — 숫자만 남기고 세 자리마다 쉼표. 소수점 칸은 점 하나까지 */
+const digits = s => String(s || '').replace(/[^\d]/g, '');
+const numOf = s => { const d = digits(s); return d ? +d : 0; };
+function decOf(s) {
+  const m = /^\s*(\d*)(?:\.(\d*))?/.exec(String(s || '').replace(/[^\d.]/g, ''));
+  const v = parseFloat((m[1] || '0') + '.' + (m[2] || '0'));
+  return isFinite(v) ? v : 0;
+}
+
+/* ── 기억 — 이 브라우저에만(localStorage, installment_calculator. 로 시작) ── */
+const KP = 'installment_calculator.';
+const lsGet = k => { try { return localStorage.getItem(KP + k); } catch (e) { return null; } };
+const lsSet = (k, v) => { try { localStorage.setItem(KP + k, v); } catch (e) { /* 사생활 보호 창 등 — 기억만 못 한다 */ } };
+
+/* ── 복사 · 보내기 · 저장 ── */
+function fallbackCopy(text, done) {
+  const t = document.createElement('textarea');
+  t.value = text; t.setAttribute('readonly', ''); t.style.cssText = 'position:fixed;left:-9999px;top:0';
+  document.body.appendChild(t); t.select(); t.setSelectionRange(0, text.length);
+  try { document.execCommand('copy'); done(); } catch (e) { toast('길게 눌러 복사해 주세요.', 4200); }
+  t.remove();
+}
+function copyText(s, msg) {
+  const done = () => toast(msg, 3400);
+  try {
+    if (navigator.clipboard && navigator.clipboard.writeText) { navigator.clipboard.writeText(s).then(done, () => fallbackCopy(s, done)); return; }
+  } catch (e) { /* 아래로 */ }
+  fallbackCopy(s, done);
+}
+/* 휴대폰은 공유 창, 컴퓨터·앱 안은 복사 */
+async function sendLink(text, url) {
+  if (navigator.share && coarse() && !IA.on) {
+    try { await navigator.share({ text, url }); return; } catch (e) { if (e && e.name === 'AbortError') return; }
+  }
+  copyText(text + '\n' + url, '링크를 복사했어요. 메시지 창에 붙여 넣으세요.');
+}
+function download(blob, name) {
+  if (IA.on) { downloadInApp(blob, name); return; }
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url; a.download = name; a.rel = 'noopener';
+  document.body.appendChild(a); a.click(); a.remove();
+  setTimeout(() => URL.revokeObjectURL(url), 60000);
+}
+/* 엑셀에서 한글이 깨지지 않게 UTF-8 BOM 을 붙인 CSV */
+function csvBlob(rows) {
+  const cell = v => { const s = String(v); return /[",\n]/.test(s) ? '"' + s.replace(/"/g, '""') + '"' : s; };
+  return new Blob([String.fromCharCode(0xFEFF) + rows.map(r => r.map(cell).join(',')).join('\r\n') + '\r\n'], { type: 'text/csv;charset=utf-8' });
+}
+
+/* ════════════════════════════════════════════════════════════
+   계산 — 화면과 떨어진 순수 함수. build.py 의 같은 함수(파이썬)와 시험에서 맞춰 본다
+   돈은 모두 원 단위 정수. 이자·수수료는 원 미만을 버린다(금융사 명세서와 같은 쪽)
+   ════════════════════════════════════════════════════════════ */
+
+/* ── 자동차 할부 ──
+   원리금균등: 매달 같은 돈. 이자 = 남은 원금 × 연 금리 ÷ 12
+   유예할부: 유예금(B)은 만기까지 남겨 두고 이자만 매달 낸다. 나머지(L − B)는 원리금균등으로 갚는다
+     월 납입금 = B × r + (L − B) × r(1+r)^n / ((1+r)^n − 1)
+   월 납입금은 원 단위로 반올림하고, 끝수는 마지막 회차에서 맞춘다 */
+function carPayRaw(L, B, n, rate) {
+  const r = rate / 1200;
+  if (r <= 0) return (L - B) / n;
+  const q = Math.pow(1 + r, n);
+  return B * r + (L - B) * r * q / (q - 1);
+}
+function carCalc(o) {
+  const L = o.price - o.down, B = o.B || 0, n = o.n, r = o.rate / 1200;
+  if (!(L > 0) || !(n >= 1) || !(o.rate >= 0) || B >= L || B < 0) return null;
+  const M = Math.round(carPayRaw(L, B, n, o.rate));
+  const rows = [];
+  let bal = L, totI = 0, totP = 0;
+  for (let k = 1; k <= n; k++) {
+    const I = Math.floor(bal * r);
+    let P = k < n ? M - I : bal - B;
+    if (P < 0) P = 0;
+    if (P > bal - B) P = bal - B;
+    bal -= P; totI += I; totP += P + I;
+    rows.push({ k, pay: P + I, P, I, bal });
+  }
+  return { L, B, n, rate: o.rate, M, rows, totI, totPay: totP + B, last: rows[n - 1].pay, cash: o.price + totI };
+}
+/* 월 납입금으로 연 금리 거꾸로 찾기 — 견적서의 월 납입금이 어떤 금리인지. 이분법(금리가 오르면 월 납입금도 오른다) */
+function carSolveRate(L, B, n, M) {
+  if (!(M > 0) || !(L > B)) return null;
+  if (M * n + 0.5 < L - B) return -1;              /* 0% 보다도 적다 — 입력이 맞지 않는다 */
+  let lo = 0, hi = 60;
+  if (carPayRaw(L, B, n, hi) < M) return 99;       /* 연 60% 를 넘는다 */
+  for (let i = 0; i < 80; i++) {
+    const mid = (lo + hi) / 2;
+    if (carPayRaw(L, B, n, mid) < M) lo = mid; else hi = mid;
+  }
+  return (lo + hi) / 2;
+}
+/* 중도상환 — k 회차까지 낸 뒤 남은 원금을 한 번에. 수수료 = 남은 원금 × 수수료율 × (남은 기간 ÷ 전체 기간) */
+function carPayoff(c, k, feeRate) {
+  if (!c || k < 1 || k >= c.n) return null;
+  const left = c.rows[k - 1].bal + c.B;
+  const restI = c.rows.slice(k).reduce((s, x) => s + x.I, 0);
+  const fee = Math.floor(left * feeRate / 100 * (c.n - k) / c.n);
+  return { k, left, restI, fee, save: restI - fee };
+}
+/* 취득세 — 신차는 부가세를 뺀 값(차값 ÷ 1.1), 중고차는 산 값으로. 10원 미만은 버린다 */
+const TAXT = {
+  car: { n: '일반 승용', rate: 7, cut: 0 },
+  light: { n: '경차', rate: 4, cut: 750000 },
+  ev: { n: '전기·수소 승용', rate: 7, cut: 1400000 },
+  van: { n: '승합·화물', rate: 5, cut: 0 },
+  own: { n: '직접 입력', rate: 0, cut: 0 }
+};
+function acqTax(price, kind, type, ownRate) {
+  const t = TAXT[type] || TAXT.car;
+  const base = kind === 'new' ? Math.floor(price / 1.1) : price;
+  const rate = type === 'own' ? ownRate : t.rate;
+  const raw = Math.floor(base * rate / 100);
+  return { base, rate, raw, cut: Math.min(raw, t.cut), tax: Math.floor(Math.max(0, raw - t.cut) / 10) * 10 };
+}
+
+/* ── 카드 할부 ──
+   원금 = 결제 금액 ÷ 개월 수(원 미만 버림, 나머지는 첫 회차에)
+   수수료 = 남은 원금 × 연 수수료율 × 일수 ÷ 365(윤년의 날은 366) — 카드사 공시 산식
+     · 월 단위(간편): 한 달을 1/12 년으로
+     · 날짜로: 첫 회차는 이용일부터 첫 결제일까지, 다음부터는 결제일과 결제일 사이
+   무이자는 수수료 0, 부분 무이자는 앞 회차(1~k)만 회원이 낸다 */
+const DAY = 86400000;
+const ymd = d => d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
+const mkDate = (y, m, d) => new Date(y, m, d, 12);      /* 낮 12시 — 서머타임·시간대에 날짜가 밀리지 않게 */
+const parseYmd = s => { const m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(s || ''); if (!m) return null; const d = mkDate(+m[1], +m[2] - 1, +m[3]); return d.getMonth() === +m[2] - 1 ? d : null; };
+const isLeap = y => (y % 4 === 0 && y % 100 !== 0) || y % 400 === 0;
+function yearFrac(a, b) {
+  let s = 0;
+  for (let t = a.getTime(); t < b.getTime() - DAY / 2; t += DAY) s += 1 / (isLeap(new Date(t).getFullYear()) ? 366 : 365);
+  return s;
+}
+const daysBetween = (a, b) => Math.round((b - a) / DAY);
+/* 첫 결제일 어림 — 이용일 14일 뒤 처음 오는 결제일(결제일 14일 = 전월 1일~말일 이용처럼 카드사 기준과 대개 맞는다) */
+function firstBill(use, day) {
+  const t = new Date(use.getTime() + 14 * DAY);
+  let d = mkDate(t.getFullYear(), t.getMonth(), day);
+  if (d.getTime() < t.getTime() - DAY / 2) d = mkDate(t.getFullYear(), t.getMonth() + 1, day);
+  return d;
+}
+/* 다음 달 같은 날 — 그 달에 없는 날(31일 등)은 말일로 */
+const addMonths = (d, k) => { const y = d.getFullYear(), m = d.getMonth() + k; return mkDate(y, m, Math.min(d.getDate(), new Date(y, m + 1, 0).getDate())); };
+function cardCalc(o) {
+  const amt = o.amt, n = o.n, rate = o.rate;
+  if (!(amt >= n) || !(n >= 1) || !(rate >= 0)) return null;
+  const base = Math.floor(amt / n), rem = amt - base * n;
+  const byDate = o.mode === 'date' && o.use && o.first && o.first > o.use;
+  const rows = [];
+  let bal = amt, tot = 0, full = 0;
+  for (let i = 1; i <= n; i++) {
+    const P = base + (i === 1 ? rem : 0);
+    let raw, date = null, days = 0;
+    if (byDate) {
+      const d0 = i === 1 ? o.use : addMonths(o.first, i - 2), d1 = addMonths(o.first, i - 1);
+      raw = bal * rate / 100 * yearFrac(d0, d1); date = d1; days = daysBetween(d0, d1);
+    } else raw = bal * rate / 1200;
+    const f = Math.floor(raw + 1e-7);
+    const paid = o.free === 'none' || (o.free === 'part' && i <= o.k);
+    const fee = paid ? f : 0;
+    bal -= P; tot += fee; full += f;
+    rows.push({ i, date, days, P, fee, free: !paid, pay: P + fee, bal });
+  }
+  return { amt, n, rate, rows, fee: tot, full, saved: full - tot, first: rows[0].pay, byDate };
+}
+/* 선결제 — k 회차를 낸 뒤 남은 원금을 한 번에 내면 그 뒤 회차 수수료가 빠진다 */
+function cardPrepay(c, k) {
+  if (!c || k < 1 || k >= c.n) return null;
+  return { k, left: c.rows[k - 1].bal, save: c.rows.slice(k).reduce((s, x) => s + x.fee, 0) };
+}
+/* 부분 무이자 회원 부담 회차 — 6개월 1~2, 10개월 1~3, 12개월 1~4 처럼 흔한 조건을 처음 값으로 */
+const partDefault = n => clamp(Math.round(n / 3), 1, Math.max(1, n - 1));
+
+/* ════════════════════════════════════════════════════════════
+   인앱 브라우저 (네이버·카카오톡 앱 안에서 열었을 때)
+   계산은 앱 안에서도 그대로 된다. 막히는 것은 상환표 파일 저장뿐이라
+   위에 띠만 띄우고, 저장은 blob: 대신 data: 주소로 시도한다
+   ════════════════════════════════════════════════════════════ */
+const UA = navigator.userAgent || '';
+const IA = {
+  naver: /NAVER\(inapp/i.test(UA),
+  kakao: /KAKAOTALK/i.test(UA),
+  line: /\bLine\//i.test(UA),
+  ios: /iPhone|iPad|iPod/i.test(UA),
+  android: /Android/i.test(UA)
+};
+IA.on = IA.naver || IA.kakao || IA.line ||
+  /Instagram|FBAN|FBAV|FB_IAB|DaumApps|everytimeApp|band\/|KAKAOSTORY/i.test(UA) ||
+  (IA.android && /;\s*wv\)/i.test(UA));
+
+function externalUrl() {
+  const url = location.href;
+  if (IA.kakao) return 'kakaotalk://web/openExternal?url=' + encodeURIComponent(url);
+  if (IA.line) return url + (url.indexOf('?') >= 0 ? '&' : '?') + 'openExternalBrowser=1';
+  if (IA.android) return 'intent://' + url.replace(/^https?:\/\//i, '') +
+    '#Intent;scheme=https;package=com.android.chrome;S.browser_fallback_url=' + encodeURIComponent(url) + ';end';
+  return '';
+}
+function downloadInApp(blob, name) {
+  const fr = new FileReader();
+  fr.onload = () => {
+    try {
+      const a = document.createElement('a');
+      a.href = fr.result; a.download = name; a.rel = 'noopener';
+      document.body.appendChild(a); a.click(); a.remove();
+      toast('저장이 안 되면 위쪽 「' + $('iaGo').textContent + '」를 눌러 주세요.', 5200);
+    } catch (e) { toast('앱 안에서는 저장이 막혀 있어요. 위쪽 「' + $('iaGo').textContent + '」를 눌러 주세요.', 5200); }
+  };
+  fr.readAsDataURL(blob);
+}
+function initInApp() {
+  if (!IA.on) return;
+  const app = IA.naver ? '네이버 앱' : IA.kakao ? '카카오톡' : IA.line ? '라인' : '앱';
+  const copyOnly = IA.ios && !IA.kakao && !IA.line;
+  const chromeIntent = IA.android && !IA.kakao && !IA.line;
+  let hidden = false;
+  try { hidden = sessionStorage.getItem(KP + 'iahide') === '1'; } catch (e) { /* 무시 */ }
+  if (!hidden) document.body.classList.add('inapp');
+  $('iaMsg').textContent = app + ' 안에서는 상환표 파일 저장이 안 될 수 있어요.';
+  $('iaSub').textContent = copyOnly ? '계산은 그대로 돼요. 저장하려면 주소를 복사해 사파리에서 여세요.' : '계산은 그대로 돼요. 파일로 저장하려면 브라우저를 옮겨 주세요.';
+  $('iaGo').textContent = copyOnly ? '주소 복사' : chromeIntent ? '크롬에서 열기' : '다른 브라우저로 열기';
+  $('iaGo').addEventListener('click', () => {
+    const u = externalUrl();
+    if (u) location.href = u;
+    else copyText(location.href, '주소를 복사했어요. 사파리 주소창에 붙여 넣거나, 메뉴에서 「다른 브라우저로 열기」를 누르세요.');
+  });
+  $('iaX').addEventListener('click', () => {
+    document.body.classList.remove('inapp');
+    try { sessionStorage.setItem(KP + 'iahide', '1'); } catch (e) { /* 무시 */ }
+  });
+}
+
+/* ════════════════════════════════════════════════════════════
+   자동차 할부 화면 — 조건(CS) → carCalc → 결과 · 비교표 · 견적 금리 · 중도상환 · 상환표
+   차값·선수금(금액)·유예금(금액)은 만원 단위로 받는다
+   ════════════════════════════════════════════════════════════ */
+const CDEF = { kind: 'new', price: 3500, dm: 'pct', downPct: 20, downMan: 700, n: 60, rate: 4.9, m: 'eq', bm: 'pct', defPct: 30, defMan: 1050,
+  tax: false, tt: 'car', taxOwn: 7, qM: 0, pK: 30, pFee: 1 };
+const CS = JSON.parse(JSON.stringify(CDEF));
+let CR = null;   /* 마지막 계산 결과 */
+
+function carIn(over) {
+  const s = Object.assign({}, CS, over || {});
+  const price = Math.round(s.price * 10000);
+  const down = s.dm === 'pct' ? Math.round(price * s.downPct / 100) : Math.round(s.downMan * 10000);
+  const B = s.m === 'def' ? (s.bm === 'pct' ? Math.round(price * s.defPct / 100) : Math.round(s.defMan * 10000)) : 0;
+  return { price, down, n: s.n, rate: s.rate, B };
+}
+/* 입력이 말이 안 되면 그 까닭을 돌려준다 */
+function carWhy(o) {
+  if (!(o.price > 0)) return '차량 가격을 넣으세요.';
+  if (o.down >= o.price) return '선수금이 차값과 같거나 많아요. 할부할 돈이 없어요.';
+  if (!(o.n >= 1 && o.n <= 120)) return '할부 기간은 1~120개월로 넣으세요.';
+  if (!(o.rate >= 0 && o.rate <= 30)) return '연 금리는 0~30% 사이로 넣으세요.';
+  if (o.B >= o.price - o.down) return '유예금이 할부원금(차값 − 선수금)보다 커요. 유예금을 줄이세요.';
+  return '';
+}
+const yrs = n => n % 12 === 0 ? (n / 12) + '년' : n >= 12 ? Math.floor(n / 12) + '년 ' + (n % 12) + '개월' : n + '개월';
+
+function renderCar() {
+  const o = carIn(), why = carWhy(o);
+  CR = why ? null : carCalc(o);
+  $('rcOpt').textContent = CS.n + '개월 · 연 ' + pct(CS.rate, 2) + (CS.m === 'def' ? ' · 유예' : '');
+  $('rCar').classList.toggle('bad', !CR);
+  if (!CR) {
+    $('rcM').textContent = '—'; $('rcMs').textContent = why; $('rcB').classList.add('hide');
+    $('rcKV').innerHTML = ''; $('rcNote').textContent = ''; $('rcBar').style.visibility = 'hidden';
+    ['tcN', 'tcD', 'tsY', 'tsAll'].forEach(id => { $(id).innerHTML = ''; }); $('tcR').innerHTML = ''; $('qRes').textContent = ''; $('pRes').textContent = '';
+    paintMbar(); return;
+  }
+  const c = CR;
+  $('rcM').textContent = won(c.M);
+  $('rcMs').textContent = manWon(c.M) + ' × ' + c.n + '회' + (c.last !== c.M ? ' · 마지막 회차 ' + won(c.last) : '');
+  $('rcB').classList.toggle('hide', !c.B);
+  if (c.B) $('rcB').innerHTML = '만기(' + c.n + '회차)에 <b>유예금 ' + manWon(c.B) + '</b>을 한 번에 내요';
+  const sumIP = c.L + c.totI;
+  $('rcBar').style.visibility = '';
+  $('rcBar').querySelector('.p').style.width = (c.L / sumIP * 100).toFixed(2) + '%';
+  $('rcBar').querySelector('.i').style.width = (c.totI / sumIP * 100).toFixed(2) + '%';
+  const tax = CS.tax ? acqTax(o.price, CS.kind, CS.tt, CS.taxOwn) : null;
+  const kv = [
+    ['할부원금', manWon(c.L), '차값 ' + manWon(o.price) + ' − 선수금 ' + manWon(o.down)],
+    ['총 이자', manWon(c.totI), '할부원금의 ' + pct(c.totI / c.L * 100, 1), 'i'],
+    ['할부로 내는 돈', manWon(c.totPay), c.B ? '월 납입금 합계 + 유예금' : '월 납입금 ' + c.n + '회 합계'],
+    ['차값 + 이자', manWon(o.price + c.totI), '선수금까지 모두 더한 값'],
+    ['처음 필요한 돈', manWon(o.down + (tax ? tax.tax : 0)), tax ? '선수금 ' + manWon(o.down) + ' + 취득세 ' + manWon(tax.tax) : '선수금(취득세는 빼고)', 'f']
+  ];
+  $('rcKV').innerHTML = kv.map(x => '<div class="' + (x[3] || '') + '"><span class="k">' + x[0] + '</span><b>' + x[1] + '</b><small>' + esc(x[2]) + '</small></div>').join('');
+  $('rcBar').setAttribute('title', '원금 ' + manWon(c.L) + ' · 이자 ' + manWon(c.totI));
+  /* 한 줄 풀이 */
+  const mI = c.rows[0].I;
+  $('rcNote').innerHTML = c.B
+    ? '첫 달 납입금 ' + won(c.M) + ' 가운데 이자가 ' + won(mI) + '이에요. 유예금 ' + manWon(c.B) + '은 만기까지 줄지 않아 그 이자만 매달 약 ' + won(Math.floor(c.B * c.rate / 1200)) + '씩 붙어요.'
+    : '첫 달 납입금 ' + won(c.M) + ' 가운데 <b>이자가 ' + won(mI) + '</b>, 원금이 ' + won(c.M - mI) + '이에요. 갈수록 이자는 줄고 원금이 늘어요.';
+  if (tax) {
+    $('cTaxNote').innerHTML = (CS.kind === 'new' ? '신차는 부가세를 뺀 ' + manWon(tax.base) + '(차값 ÷ 1.1)' : '중고차는 산 값 ' + manWon(tax.base)) + '에 ' + pct(tax.rate, 2) + ' = ' + won(tax.raw) +
+      (tax.cut ? ' − 감면 ' + won(tax.cut) : '') + ' → <b>취득세 ' + won(tax.tax) + '</b>';
+  }
+  renderCarCmp(o, c);
+  renderCarTools(o, c);
+  renderCarSched(c);
+  paintMbar();
+}
+
+function cmpRows(list, cur, mk) {
+  return list.map(v => { const r = mk(v); return '<tr class="' + (v === cur ? 'hl' : '') + '">' + r.map((x, i) => i ? '<td>' + x + '</td>' : '<th scope="row">' + x + '</th>').join('') + '</tr>'; }).join('');
+}
+function renderCarCmp(o, c) {
+  const ns = Array.from(new Set([24, 36, 48, 60, 72, CS.n])).filter(n => n >= 1 && n <= 120).sort((a, b) => a - b);
+  $('tcN').innerHTML = '<thead><tr><th>기간</th><th>월 납입금</th><th>총 이자</th></tr></thead><tbody>' + cmpRows(ns, CS.n, n => {
+    const x = carCalc(Object.assign({}, o, { n }));
+    return [n + '개월<small>' + yrs(n) + '</small>', x ? won(x.M) : '—', x ? manWon(x.totI) + diffTxt(x.totI - c.totI) : '—'];
+  }) + '</tbody>';
+  const curP = CS.dm === 'pct' ? CS.downPct : Math.round(o.down / o.price * 1000) / 10;
+  const ds = Array.from(new Set([0, 10, 20, 30, 40, curP])).filter(p => p >= 0 && p < 100).sort((a, b) => a - b);
+  $('tcD').innerHTML = '<thead><tr><th>선수금</th><th>월 납입금</th><th>총 이자</th></tr></thead><tbody>' + cmpRows(ds, curP, p => {
+    const dn = p === curP ? o.down : Math.round(o.price * p / 100);
+    const x = carWhy(Object.assign({}, o, { down: dn })) ? null : carCalc(Object.assign({}, o, { down: dn }));
+    return [pct(p, 1) + '<small>' + manWon(dn) + '</small>', x ? won(x.M) : '—', x ? manWon(x.totI) + diffTxt(x.totI - c.totI) : '—'];
+  }) + '</tbody>';
+  const rs = [CS.rate - 1, CS.rate, CS.rate + 1].filter(r => r >= 0 && r <= 30);
+  $('tcR').innerHTML = rs.map(r => {
+    const x = carCalc(Object.assign({}, o, { rate: r }));
+    return '<div class="' + (r === CS.rate ? 'on' : '') + '"><span class="k">연 ' + pct(r, 2) + (r === CS.rate ? ' · 지금' : '') + '</span><b>' + won(x.M) + '</b><small>이자 ' + manWon(x.totI) + (r === CS.rate ? '' : diffTxt(x.totI - c.totI, true)) + '</small></div>';
+  }).join('');
+}
+function diffTxt(d, plain) {
+  if (Math.abs(d) < 1) return '';
+  return (plain ? ' ' : '<small class="' + (d > 0 ? 'up' : 'dn') + '">') + (d > 0 ? '+' : '−') + manWon(Math.abs(d)) + (plain ? '' : '</small>');
+}
+function renderCarTools(o, c) {
+  /* 견적서 금리 확인 */
+  if (CS.qM > 0) {
+    const r = carSolveRate(c.L, c.B, c.n, CS.qM);
+    if (r === -1) $('qRes').innerHTML = '<span class="warn">금리 0%로 쳐도 월 ' + won(Math.ceil((c.L - c.B) / c.n)) + '은 내야 해요. 차값·선수금·기간·유예금이 견적서와 같은지 확인하세요.</span>';
+    else if (r === 99) $('qRes').innerHTML = '<span class="warn">연 60%를 넘는 값이에요. 숫자를 다시 확인하세요.</span>';
+    else {
+      const d = r - CS.rate;
+      $('qRes').innerHTML = '월 ' + won(CS.qM) + '이면 실제 금리는 <b>연 ' + pct(r, 2) + '</b>예요. ' +
+        (Math.abs(d) < 0.05 ? '입력한 금리와 거의 같아요.' : '입력한 연 ' + pct(CS.rate, 2) + '보다 <b class="' + (d > 0 ? 'up' : 'dn') + '">' + pct(Math.abs(d), 2) + 'p ' + (d > 0 ? '높아요' : '낮아요') + '</b>.' +
+          (d > 0.3 ? ' 할부원금에 인지세·보증료·용품 비용이 들어갔는지 물어보세요.' : ''));
+    }
+  } else $('qRes').textContent = '';
+  /* 중도상환 */
+  const k = clamp(CS.pK, 1, Math.max(1, c.n - 1));
+  const p = carPayoff(c, k, CS.pFee);
+  $('pRes').innerHTML = p
+    ? k + '회차까지 내면 남은 원금은 <b>' + manWon(p.left) + '</b>' + (c.B ? '(유예금 포함)' : '') + '. 지금 다 갚으면 앞으로 낼 이자 ' + manWon(p.restI) + '이 빠지고, 수수료는 ' + manWon(p.fee) + '이에요. ' +
+      (p.save > 0 ? '<b class="dn">' + manWon(p.save) + ' 아껴요.</b>' : '<b class="up">수수료가 더 커서 ' + manWon(-p.save) + ' 손해예요.</b>')
+    : '할부 기간이 1개월이면 중도상환을 셀 수 없어요.';
+}
+function renderCarSched(c) {
+  const ys = [];
+  for (let y = 0; y * 12 < c.n; y++) {
+    const rs = c.rows.slice(y * 12, y * 12 + 12);
+    ys.push([(y + 1) + '년차<small>' + rs[0].k + '~' + rs[rs.length - 1].k + '회</small>', manWon(rs.reduce((s, x) => s + x.pay, 0)), manWon(rs.reduce((s, x) => s + x.P, 0)), manWon(rs.reduce((s, x) => s + x.I, 0)), manWon(rs[rs.length - 1].bal + c.B)]);
+  }
+  $('tsY').innerHTML = '<thead><tr><th>기간</th><th class="nar">낸 돈</th><th>원금</th><th>이자</th><th>남은 원금</th></tr></thead><tbody>' +
+    ys.map(r => '<tr><th scope="row">' + r[0] + '</th><td class="nar">' + r.slice(1).join('</td><td>') + '</td></tr>').join('') +
+    (c.B ? '<tr class="bl"><th scope="row">만기</th><td class="nar">' + manWon(c.B) + '</td><td>' + manWon(c.B) + '</td><td>0원</td><td>0원</td></tr>' : '') +
+    '</tbody><tfoot><tr><th scope="row">합계</th><td class="nar">' + manWon(c.totPay) + '</td><td>' + manWon(c.L) + '</td><td>' + manWon(c.totI) + '</td><td></td></tr></tfoot>';
+  $('tsAllSum').textContent = '회차별 전체 보기 (' + c.n + '회' + (c.B ? ' + 유예금' : '') + ')';
+  if ($('tsAllBox').open) renderCarAll(c); else $('tsAll').innerHTML = '';
+}
+function renderCarAll(c) {
+  $('tsAll').innerHTML = '<thead><tr><th>회차</th><th>납입금</th><th>원금</th><th>이자</th><th>남은 원금</th></tr></thead><tbody>' +
+    c.rows.map(x => '<tr><th scope="row">' + x.k + '</th><td>' + comma(x.pay) + '</td><td>' + comma(x.P) + '</td><td>' + comma(x.I) + '</td><td>' + comma(x.bal + c.B) + '</td></tr>').join('') +
+    (c.B ? '<tr class="bl"><th scope="row">유예금</th><td>' + comma(c.B) + '</td><td>' + comma(c.B) + '</td><td>0</td><td>0</td></tr>' : '') + '</tbody>';
+}
+$('tsAllBox').addEventListener('toggle', () => { if ($('tsAllBox').open && CR) renderCarAll(CR); });
+
+function carCsv() {
+  if (!CR) { toast('조건을 먼저 맞게 넣어 주세요.'); return; }
+  const c = CR, o = carIn();
+  const rows = [['자동차 할부 상환표'], ['차량 가격', o.price], ['선수금', o.down], ['할부원금', c.L], ['기간(개월)', c.n], ['연 금리(%)', c.rate], ['유예금', c.B], ['월 납입금', c.M], ['총 이자', c.totI], [],
+    ['회차', '납입금', '원금', '이자', '남은 원금']].concat(c.rows.map(x => [x.k, x.pay, x.P, x.I, x.bal + c.B]));
+  if (c.B) rows.push(['유예금', c.B, c.B, 0, 0]);
+  rows.push([], ['할부 계산기로 계산한 참고용 값입니다. 실제 금액은 금융사 상환 계획표로 확인하세요.']);
+  download(csvBlob(rows), '자동차할부_상환표_' + Math.round(o.price / 10000) + '만원_' + c.n + '개월.csv');
+  toast('상환표를 저장했어요. 엑셀에서 열 수 있어요.', 3200);
+}
+
+/* ════════════════════════════════════════════════════════════
+   카드 할부 화면 — 조건(KS) → cardCalc → 결과 · 회차별 청구표 · 개월 수별 · 선결제
+   결제일 기준이면 이용일·결제일로 첫 결제일을 어림하고(firstBill), 사람이 고치면 그 날짜를 쓴다
+   ════════════════════════════════════════════════════════════ */
+const KDEF = { amt: 1200000, n: 6, rate: 15, f: 'none', k: 2, mode: 'month', day: 14, ppK: 2 };
+const KS = Object.assign({ use: '', first: '', firstAuto: true }, KDEF);
+let KR = null;
+const todayYmd = () => { const d = new Date(); return ymd(mkDate(d.getFullYear(), d.getMonth(), d.getDate())); };
+
+function cardIn(over) {
+  const s = Object.assign({}, KS, over || {});
+  const use = parseYmd(s.use) || parseYmd(todayYmd());
+  const auto = firstBill(use, s.day);
+  const first = s.firstAuto ? auto : (parseYmd(s.first) || auto);
+  return { amt: s.amt, n: s.n, rate: s.rate, free: s.f, k: clamp(s.k, 1, Math.max(1, s.n - 1)), mode: s.mode, use, first, auto };
+}
+function cardWhy(o) {
+  if (!(o.amt > 0)) return '결제 금액을 넣으세요.';
+  if (!(o.n >= 2 && o.n <= 36)) return '할부 개월은 2~36개월로 넣으세요.';
+  if (o.amt < o.n) return '결제 금액이 너무 작아요.';
+  if (!(o.rate >= 0 && o.rate <= 30)) return '수수료율은 0~30% 사이로 넣으세요.';
+  if (o.mode === 'date' && !(o.first > o.use)) return '첫 결제일이 이용일보다 뒤여야 해요.';
+  return '';
+}
+const freeName = (f, k) => f === 'all' ? '무이자' : f === 'part' ? '부분 무이자(1~' + k + '회차 회원 부담)' : '일반 할부';
+const md = d => (d.getMonth() + 1) + '/' + d.getDate();
+
+function renderCard() {
+  const o = cardIn(), why = cardWhy(o);
+  KR = why ? null : cardCalc(o);
+  $('rkOpt').textContent = KS.n + '개월 · 연 ' + pct(KS.rate, 2) + (KS.f === 'all' ? ' · 무이자' : KS.f === 'part' ? ' · 부분 무이자' : '');
+  $('rCard').classList.toggle('bad', !KR);
+  paintCardDate(o);
+  if (!KR) {
+    $('rkFirst').textContent = '—'; $('rkNext').textContent = why; $('rkKV').innerHTML = ''; $('rkLaw').innerHTML = ''; $('rkBar').style.visibility = 'hidden';
+    ['tkS', 'tkN'].forEach(id => { $(id).innerHTML = ''; }); $('ppRes').textContent = ''; paintMbar(); return;
+  }
+  const c = KR, r = c.rows;
+  $('rkFirst').textContent = won(c.first);
+  const rest = r.slice(1).map(x => x.pay), mn = Math.min.apply(null, rest), mx = Math.max.apply(null, rest);
+  $('rkNext').textContent = '원금 ' + won(r[0].P) + ' + 수수료 ' + won(r[0].fee) + ' · 2회차부터 ' + (mn === mx ? '매달 ' + won(mn) : won(r[1].pay) + ' → 마지막 ' + won(r[r.length - 1].pay));
+  const tot = c.amt + c.fee;
+  $('rkBar').style.visibility = '';
+  $('rkBar').querySelector('.p').style.width = (c.amt / tot * 100).toFixed(2) + '%';
+  $('rkBar').querySelector('.i').style.width = (c.fee / tot * 100).toFixed(2) + '%';
+  const kv = [
+    ['결제 금액', won(c.amt), freeName(KS.f, o.k)],
+    ['내는 수수료', won(c.fee), '결제 금액의 ' + pct(c.fee / c.amt * 100, 2), 'i'],
+    ['모두 내는 돈', won(tot), KS.n + '회 청구액 합계']
+  ];
+  if (KS.f !== 'none') kv.push(['무이자로 빠진 수수료', won(c.saved), '일반 할부였다면 ' + won(c.full), 'f']);
+  else kv.push(['한 달 평균 수수료', won(Math.round(c.fee / c.n)), c.byDate ? '결제일 기준 · 일수로 계산' : '한 달 단위로 계산', 'f']);
+  $('rkKV').innerHTML = kv.map(x => '<div class="' + (x[3] || '') + '"><span class="k">' + x[0] + '</span><b>' + x[1] + '</b><small>' + esc(x[2]) + '</small></div>').join('');
+  const law = c.amt >= 200000 && c.n >= 3;
+  $('rkLaw').className = 'law ' + (law ? 'ok' : 'info');
+  $('rkLaw').innerHTML = law
+    ? '<b>20만원 이상 · 3개월 이상 할부</b>라 철회권(7일)과 항변권 대상이에요. 물건에 문제가 생기면 남은 할부금 지급을 멈춰 달라고 카드사에 요청할 수 있어요.'
+    : '철회권·항변권은 <b>20만원 이상</b>을 <b>3개월 이상</b> 할부로 샀을 때 생겨요. 지금 조건은 ' + (c.amt < 200000 ? '금액이 20만원보다 적어요.' : '할부가 3개월보다 짧아요.');
+  renderCardSched(c);
+  renderCardCmp(o);
+  const k = clamp(KS.ppK, 1, c.n - 1), p = cardPrepay(c, k);
+  $('ppRes').innerHTML = p ? k + '회차까지 내고 남은 원금 <b>' + won(p.left) + '</b>을 한 번에 내면 수수료 <b class="dn">' + won(p.save) + '</b>을 아껴요.' + (p.save === 0 ? ' (그 뒤 회차는 원래 수수료가 없어요)' : '') : '';
+  paintMbar();
+}
+function paintCardDate(o) {
+  $('kDateBox').classList.toggle('hide', KS.mode !== 'date');
+  if (KS.mode !== 'date') return;
+  if (document.activeElement !== $('kUse')) $('kUse').value = ymd(o.use);
+  if (document.activeElement !== $('kFirst')) $('kFirst').value = ymd(o.first);
+  const d = daysBetween(o.use, o.first);
+  $('kFirstTxt').textContent = (KS.firstAuto ? '자동으로 어림 · ' : '직접 넣은 날짜 · ') + '첫 회차 ' + d + '일 치';
+}
+function renderCardSched(c) {
+  const dt = c.byDate;
+  $('tkOpt').textContent = freeName(KS.f, clamp(KS.k, 1, KS.n - 1)) + (dt ? ' · 결제일 기준' : ' · 한 달 단위');
+  $('tkS').innerHTML = '<thead><tr><th>회차</th>' + (dt ? '<th>결제일</th>' : '') + '<th>원금</th><th>수수료</th><th>청구액</th><th class="nar">남은 원금</th></tr></thead><tbody>' +
+    c.rows.map(x => '<tr class="' + (x.free ? 'fr' : '') + '"><th scope="row">' + x.i + '</th>' + (dt ? '<td>' + md(x.date) + '<small>' + x.days + '일</small></td>' : '') +
+      '<td>' + comma(x.P) + '</td><td>' + (x.free ? '<span class="tag">무이자</span>' : comma(x.fee)) + '</td><td><b>' + comma(x.pay) + '</b></td><td class="nar">' + comma(x.bal) + '</td></tr>').join('') +
+    '</tbody><tfoot><tr><th scope="row">합계</th>' + (dt ? '<td></td>' : '') + '<td>' + comma(c.amt) + '</td><td>' + comma(c.fee) + '</td><td><b>' + comma(c.amt + c.fee) + '</b></td><td class="nar"></td></tr></tfoot>';
+}
+function renderCardCmp(o) {
+  const ns = Array.from(new Set([2, 3, 6, 10, 12, 24, KS.n])).filter(n => n >= 2 && n <= 36 && n <= o.amt).sort((a, b) => a - b);
+  $('tkN').innerHTML = '<thead><tr><th>개월</th><th>총 수수료</th><th>첫 달 청구액</th></tr></thead><tbody>' + cmpRows(ns, KS.n, n => {
+    const x = cardCalc(Object.assign({}, o, { n, free: 'none' }));
+    return [n + '개월', x ? won(x.fee) + '<small>' + pct(x.fee / x.amt * 100, 2) + '</small>' : '—', x ? won(x.first) : '—'];
+  }) + '</tbody>';
+}
+function cardCsv() {
+  if (!KR) { toast('조건을 먼저 맞게 넣어 주세요.'); return; }
+  const c = KR, dt = c.byDate;
+  const rows = [['카드 할부 청구표'], ['결제 금액', c.amt], ['할부 개월', c.n], ['연 수수료율(%)', c.rate], ['무이자', freeName(KS.f, clamp(KS.k, 1, KS.n - 1))], ['총 수수료', c.fee], [],
+    ['회차'].concat(dt ? ['결제일', '일수'] : [], ['원금', '수수료', '청구액', '남은 원금'])].concat(c.rows.map(x => [x.i].concat(dt ? [ymd(x.date), x.days] : [], [x.P, x.fee, x.pay, x.bal])));
+  rows.push([], ['할부 계산기로 계산한 참고용 값입니다. 실제 청구액은 카드사 명세서로 확인하세요.']);
+  download(csvBlob(rows), '카드할부_청구표_' + c.amt + '원_' + c.n + '개월.csv');
+  toast('청구표를 저장했어요. 엑셀에서 열 수 있어요.', 3200);
+}
+
+/* ════════════════════════════════════════════════════════════
+   입력 · 탭 · 기억(localStorage, installment_calculator.) · 링크(# 뒤) · 휴대폰 아래 띠
+   입력칸은 칠 때마다 바로 계산하고, 쉼표는 칸을 떠날 때 다시 찍는다(치는 동안 커서가 튀지 않게)
+   ════════════════════════════════════════════════════════════ */
+const UI = { tab: 'car' };
+const SEGS = {
+  'tab': [UI, 'tab', 's'],
+  'c.kind': [CS, 'kind', 's'], 'c.dm': [CS, 'dm', 's'], 'c.n': [CS, 'n', 'n'], 'c.m': [CS, 'm', 's'], 'c.bm': [CS, 'bm', 's'], 'c.tt': [CS, 'tt', 's'],
+  'k.n': [KS, 'n', 'n'], 'k.f': [KS, 'f', 's'], 'k.mode': [KS, 'mode', 's']
+};
+function paintSegs() {
+  document.querySelectorAll('[data-seg]').forEach(g => {
+    const d = SEGS[g.dataset.seg];
+    if (!d) return;
+    const v = String(d[0][d[1]]);
+    g.querySelectorAll('button').forEach(b => {
+      const on = b.dataset.v === v;
+      b.classList.toggle('on', on);
+      b.setAttribute(g.getAttribute('role') === 'tablist' ? 'aria-selected' : 'aria-pressed', on ? 'true' : 'false');
+    });
+  });
+}
+document.querySelectorAll('[data-seg]').forEach(g => g.addEventListener('click', e => {
+  const b = e.target.closest('button[data-v]'), d = SEGS[g.dataset.seg];
+  if (!b || !d) return;
+  const key = g.dataset.seg, v = d[2] === 'n' ? +b.dataset.v : b.dataset.v;
+  const price = CS.price;
+  /* 비율 ↔ 금액을 바꾸면 지금 값을 옮겨 적는다 */
+  if (key === 'c.dm' && v !== CS.dm) { if (v === 'won') CS.downMan = Math.round(price * CS.downPct / 100); else CS.downPct = price ? Math.round(CS.downMan / price * 1000) / 10 : 0; }
+  if (key === 'c.bm' && v !== CS.bm) { if (v === 'won') CS.defMan = Math.round(price * CS.defPct / 100); else CS.defPct = price ? Math.round(CS.defMan / price * 1000) / 10 : 0; }
+  d[0][d[1]] = v;
+  if (key === 'k.n' || (key === 'k.f' && v === 'part')) KS.k = partDefault(KS.n);
+  if (key === 'tab') { paintAll(); savePref(); window.scrollTo({ top: Math.min(window.scrollY, $('form').getBoundingClientRect().top + window.scrollY - 70) }); return; }
+  paintAll(true); savePref();
+}));
+
+/* ── 입력칸 ── [id, 읽기, 쓰기, 보여 줄 값] */
+const FIELDS = {
+  cPrice: [v => { CS.price = numOf(v); }, () => comma(CS.price)],
+  cDown: [v => { if (CS.dm === 'pct') CS.downPct = clamp(decOf(v), 0, 99.9); else CS.downMan = numOf(v); }, () => CS.dm === 'pct' ? String(CS.downPct) : comma(CS.downMan)],
+  cN: [v => { CS.n = numOf(v); }, () => String(CS.n)],
+  cRate: [v => { CS.rate = decOf(v); }, () => String(CS.rate)],
+  cDef: [v => { if (CS.bm === 'pct') CS.defPct = clamp(decOf(v), 0, 99.9); else CS.defMan = numOf(v); }, () => CS.bm === 'pct' ? String(CS.defPct) : comma(CS.defMan)],
+  cTaxOwn: [v => { CS.taxOwn = clamp(decOf(v), 0, 20); }, () => String(CS.taxOwn)],
+  qM: [v => { CS.qM = numOf(v); }, () => CS.qM ? comma(CS.qM) : ''],
+  pK: [v => { CS.pK = numOf(v); }, () => String(CS.pK)],
+  pFee: [v => { CS.pFee = clamp(decOf(v), 0, 10); }, () => String(CS.pFee)],
+  kAmt: [v => { KS.amt = numOf(v); }, () => comma(KS.amt)],
+  kN: [v => { const n = numOf(v); if (n !== KS.n) { KS.n = n; KS.k = partDefault(n); } }, () => String(KS.n)],
+  kRate: [v => { KS.rate = decOf(v); }, () => String(KS.rate)],
+  ppK: [v => { KS.ppK = numOf(v); }, () => String(KS.ppK)]
+};
+Object.keys(FIELDS).forEach(id => {
+  const el = $(id), f = FIELDS[id];
+  el.addEventListener('input', () => { f[0](el.value); paintAll(true); savePref(); });
+  el.addEventListener('blur', () => { el.value = f[1](); });
+  el.addEventListener('focus', () => { setTimeout(() => { try { el.select(); } catch (e) { /* 무시 */ } }, 0); });
+});
+$('cTax').addEventListener('change', () => { CS.tax = $('cTax').checked; paintAll(true); savePref(); });
+$('kUse').addEventListener('input', () => { if (parseYmd($('kUse').value)) { KS.use = $('kUse').value; KS.firstAuto = true; paintAll(true); savePref(); } });
+$('kFirst').addEventListener('input', () => { if (parseYmd($('kFirst').value)) { KS.first = $('kFirst').value; KS.firstAuto = false; paintAll(true); } });
+$('kDay').addEventListener('change', () => { KS.day = +$('kDay').value; KS.firstAuto = true; paintAll(true); savePref(); });
+$('kDay').innerHTML = Array.from({ length: 27 }, (_, i) => '<option value="' + (i + 1) + '">매월 ' + (i + 1) + '일</option>').join('');
+$('kK').addEventListener('click', e => {
+  const b = e.target.closest('button[data-d]');
+  if (!b) return;
+  KS.k = clamp(KS.k + +b.dataset.d, 1, Math.max(1, KS.n - 1)); paintAll(true); savePref();
+});
+/* 빠른 고르기 단추 */
+function chips(el, list, cur, label) {
+  el.innerHTML = list.map(p => '<button type="button" data-p="' + p + '" class="' + (cur === p ? 'on' : '') + '">' + label(p) + '</button>').join('');
+}
+$('cDownChips').addEventListener('click', e => {
+  const b = e.target.closest('button[data-p]'); if (!b) return;
+  const p = +b.dataset.p;
+  if (CS.dm === 'pct') CS.downPct = p; else CS.downMan = Math.round(CS.price * p / 100);
+  paintAll(); savePref();
+});
+$('cDefChips').addEventListener('click', e => {
+  const b = e.target.closest('button[data-p]'); if (!b) return;
+  const p = +b.dataset.p;
+  if (CS.bm === 'pct') CS.defPct = p; else CS.defMan = Math.round(CS.price * p / 100);
+  paintAll(); savePref();
+});
+
+/* ── 한꺼번에 다시 그리기 ── typing 이면 지금 치는 칸은 건드리지 않는다 */
+function paintAll(typing) {
+  paintSegs();
+  Object.keys(FIELDS).forEach(id => { const el = $(id); if (!(typing && document.activeElement === el)) el.value = FIELDS[id][1](); });
+  const car = UI.tab === 'car';
+  ['cCar', 'rCar', 'xCar'].forEach(id => $(id).classList.toggle('hide', !car));
+  ['cCard', 'rCard', 'xCard'].forEach(id => $(id).classList.toggle('hide', car));
+  /* 자동차 */
+  const o = carIn();
+  $('cPriceTxt').textContent = CS.price ? '= ' + won(o.price) : '';
+  $('cDownU').textContent = CS.dm === 'pct' ? '%' : '만원';
+  $('cDown').setAttribute('inputmode', CS.dm === 'pct' ? 'decimal' : 'numeric');
+  $('cDownTxt').textContent = o.price ? (CS.dm === 'pct' ? manWon(o.down) : pct(o.down / o.price * 100, 1)) + ' · 할부원금 ' + manWon(Math.max(0, o.price - o.down)) : '';
+  const curP = CS.dm === 'pct' ? CS.downPct : (o.price ? Math.round(o.down / o.price * 1000) / 10 : -1);
+  chips($('cDownChips'), [0, 10, 20, 30, 40], curP, p => p + '%');
+  $('cNTxt').textContent = CS.n >= 1 ? yrs(CS.n) : '';
+  $('cDefBox').classList.toggle('hide', CS.m !== 'def');
+  $('cDefU').textContent = CS.bm === 'pct' ? '%' : '만원';
+  $('cDefTxt').textContent = o.B ? (CS.bm === 'pct' ? manWon(o.B) : pct(o.B / o.price * 100, 1)) + ' · 매달 갚는 원금 ' + manWon(Math.max(0, o.price - o.down - o.B)) : '';
+  const curB = CS.bm === 'pct' ? CS.defPct : (o.price ? Math.round(o.B / o.price * 1000) / 10 : -1);
+  chips($('cDefChips'), [20, 30, 40, 50], curB, p => p + '%');
+  $('cTax').checked = CS.tax;
+  $('cTaxBox').classList.toggle('hide', !CS.tax);
+  $('cTaxOwnBox').classList.toggle('hide', CS.tt !== 'own');
+  $('cPriceNote').innerHTML = CS.kind === 'new' ? '옵션·탁송료까지 넣고 할인을 뺀 <b>최종 차값</b>을 넣으세요.' : '이전 등록비를 뺀 <b>차값(매매 가격)</b>을 넣으세요. 중고차는 금리가 신차보다 높은 편이에요.';
+  /* 카드 */
+  $('kAmtTxt').textContent = KS.amt >= 10000 ? manWon(KS.amt) : '';
+  $('kNTxt').textContent = KS.n >= 2 ? KS.n + '회로 나눠 내요' : '';
+  $('kPartBox').classList.toggle('hide', KS.f !== 'part');
+  const k = clamp(KS.k, 1, Math.max(1, KS.n - 1));
+  $('kK').querySelector('.v').textContent = k;
+  $('kK').querySelector('[data-d="-1"]').disabled = k <= 1;
+  $('kK').querySelector('[data-d="1"]').disabled = k >= KS.n - 1;
+  $('kKTxt').textContent = KS.n > k ? (k + 1) + '~' + KS.n + '회차는 무이자' : '';
+  $('kDay').value = String(KS.day);
+  if (car) renderCar(); else renderCard();
+}
+
+/* ── 기억 ── 마지막 조건만(넣은 금액도 남는다 — 이 브라우저에만) */
+let prefT = 0;
+function prefObj() {
+  const c = {}, k = {};
+  Object.keys(CDEF).forEach(x => { if (x !== 'qM') c[x] = CS[x]; });
+  Object.keys(KDEF).forEach(x => { k[x] = KS[x]; });
+  return { tab: UI.tab, c, k };
+}
+function savePref() { clearTimeout(prefT); prefT = setTimeout(() => lsSet('pref', JSON.stringify(prefObj())), 150); }
+const OK = {
+  kind: v => v === 'new' || v === 'used', dm: v => v === 'pct' || v === 'won', bm: v => v === 'pct' || v === 'won', m: v => v === 'eq' || v === 'def',
+  tt: v => v in TAXT, f: v => ['none', 'all', 'part'].includes(v), mode: v => v === 'month' || v === 'date', tax: v => typeof v === 'boolean',
+  num: v => typeof v === 'number' && isFinite(v) && v >= 0 && v <= 1e7
+};
+function applyObj(dst, src, def) {
+  if (!src || typeof src !== 'object') return;
+  Object.keys(def).forEach(x => {
+    if (!(x in src)) return;
+    const ok = OK[x] || (typeof def[x] === 'number' ? OK.num : null);
+    if (ok && ok(src[x])) dst[x] = src[x];
+  });
+}
+function loadPref() {
+  let p = null;
+  try { p = JSON.parse(lsGet('pref') || 'null'); } catch (e) { p = null; }
+  if (!p || typeof p !== 'object') return;
+  if (p.tab === 'car' || p.tab === 'card') UI.tab = p.tab;
+  applyObj(CS, p.c, CDEF); applyObj(KS, p.k, KDEF);
+  if (!(KS.day >= 1 && KS.day <= 27)) KS.day = 14;
+}
+
+/* ── 링크 ── #c=new_3500_pct_20_60_4.9_eq_pct_30_0_car_7  ·  #k=1200000_6_15_none_2_month_14_20261123_ */
+function carLink() {
+  return ['c=' + CS.kind, CS.price, CS.dm, CS.dm === 'pct' ? CS.downPct : CS.downMan, CS.n, CS.rate, CS.m, CS.bm, CS.bm === 'pct' ? CS.defPct : CS.defMan, CS.tax ? 1 : 0, CS.tt, CS.taxOwn].join('_');
+}
+function cardLink() {
+  const o = cardIn();
+  return ['k=' + KS.amt, KS.n, KS.rate, KS.f, KS.k, KS.mode, KS.day, KS.mode === 'date' ? ymd(o.use).replace(/-/g, '') : '', KS.mode === 'date' && !KS.firstAuto ? ymd(o.first).replace(/-/g, '') : ''].join('_');
+}
+const linkUrl = h => location.href.split('#')[0] + '#' + h;
+function readLink() {
+  const h = location.hash.replace(/^#/, '');
+  let m = /^c=(new|used)_(\d+)_(pct|won)_([\d.]+)_(\d+)_([\d.]+)_(eq|def)_(pct|won)_([\d.]+)_([01])_(\w+)_([\d.]+)$/.exec(h);
+  if (m) {
+    const t = { kind: m[1], price: +m[2], dm: m[3], n: +m[5], rate: +m[6], m: m[7], bm: m[8], tax: m[10] === '1', tt: m[11], taxOwn: +m[12] };
+    if (t.dm === 'pct') t.downPct = +m[4]; else t.downMan = +m[4];
+    if (t.bm === 'pct') t.defPct = +m[9]; else t.defMan = +m[9];
+    applyObj(CS, t, CDEF); UI.tab = 'car'; return true;
+  }
+  m = /^k=(\d+)_(\d+)_([\d.]+)_(none|all|part)_(\d+)_(month|date)_(\d+)_(\d{8})?_(\d{8})?$/.exec(h);
+  if (m) {
+    applyObj(KS, { amt: +m[1], n: +m[2], rate: +m[3], f: m[4], k: +m[5], mode: m[6], day: +m[7] }, KDEF);
+    if (!(KS.day >= 1 && KS.day <= 27)) KS.day = 14;
+    const dd = s => s ? s.slice(0, 4) + '-' + s.slice(4, 6) + '-' + s.slice(6) : '';
+    if (m[8] && parseYmd(dd(m[8]))) KS.use = dd(m[8]);
+    if (m[9] && parseYmd(dd(m[9]))) { KS.first = dd(m[9]); KS.firstAuto = false; }
+    UI.tab = 'card'; return true;
+  }
+  return false;
+}
+$('rcLink').addEventListener('click', () => {
+  if (!CR) { toast('조건을 먼저 맞게 넣어 주세요.'); return; }
+  sendLink('자동차 할부 계산 — 차값 ' + manWon(CS.price * 10000) + ', ' + CS.n + '개월, 연 ' + pct(CS.rate, 2) + ' → 월 ' + won(CR.M), linkUrl(carLink()));
+});
+$('rkLink').addEventListener('click', () => {
+  if (!KR) { toast('조건을 먼저 맞게 넣어 주세요.'); return; }
+  sendLink('카드 할부 계산 — ' + won(KS.amt) + ' ' + KS.n + '개월 → 수수료 ' + won(KR.fee), linkUrl(cardLink()));
+});
+$('rcCsv').addEventListener('click', carCsv);
+$('rkCsv').addEventListener('click', cardCsv);
+$('cReset').addEventListener('click', () => { Object.assign(CS, JSON.parse(JSON.stringify(CDEF))); paintAll(); savePref(); toast('자동차 할부 조건을 처음 값으로 돌렸어요.'); });
+$('kReset').addEventListener('click', () => { Object.assign(KS, KDEF, { use: '', first: '', firstAuto: true }); paintAll(); savePref(); toast('카드 할부 조건을 처음 값으로 돌렸어요.'); });
+
+/* ── 휴대폰 아래 띠 — 결과 카드가 화면 아래에 있는 동안(조건을 고치는 중) 결과를 보여 준다 ── */
+function paintMbar() {
+  const car = UI.tab === 'car';
+  $('mbK').textContent = car ? '월 납입금' : '첫 달 청구액';
+  $('mbV').textContent = car ? (CR ? won(CR.M) + (CR.B ? ' · 유예금 ' + manWon(CR.B) : '') : '조건을 확인하세요') : (KR ? won(KR.first) + ' · 수수료 ' + won(KR.fee) : '조건을 확인하세요');
+  mbarVis();
+}
+function mbarVis() {
+  const r = $(UI.tab === 'car' ? 'rCar' : 'rCard').getBoundingClientRect();
+  const on = window.innerWidth < 980 && r.top > window.innerHeight - 40 && $('form').getBoundingClientRect().top < window.innerHeight * 0.6;
+  $('mbar').classList.toggle('on', on);
+  $('mbar').setAttribute('aria-hidden', on ? 'false' : 'true');
+}
+window.addEventListener('scroll', mbarVis, { passive: true });
+window.addEventListener('resize', mbarVis);
+$('mbGo').addEventListener('click', () => $(UI.tab === 'car' ? 'rCar' : 'rCard').scrollIntoView({ behavior: 'smooth', block: 'start' }));
+
+/* ── 시작 ── */
+loadPref();
+if (readLink()) {
+  try { history.replaceState(null, '', location.href.split('#')[0]); } catch (e) { /* file: 등 */ }
+  setTimeout(() => toast('받은 링크의 계산을 불러왔어요.', 3200), 300);
+  savePref();
+}
+window.addEventListener('hashchange', () => { if (readLink()) { paintAll(); savePref(); } });
+initInApp();
+paintAll();
+</script>
+</body>
+</html>
